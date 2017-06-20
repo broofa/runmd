@@ -4,7 +4,7 @@
     "name": "Robert Kieffer",
     "email": "robert@broofa.com"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "bin": {"runmd": "./cli.js"},
   "description": "Runnable README files",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "mocha": "latest"
   },
   "scripts": {
-    "prepublish": "./cli.js README_js.md --output README.md",
+    "prepare": "./cli.js README_js.md --output README.md",
     "test": "mocha test"
   }
 }
