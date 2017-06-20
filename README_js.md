@@ -43,7 +43,7 @@ Renders as:
 
 (Note: This option may be omitted if other options are set
 
-## --context[=<name>]
+## --context[=name]
 
 Create or restore a named execution context.  If `name` hasn't been seen before,
 a new context is created.  Otherwise the previously created context for `name`
