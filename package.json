@@ -1,0 +1,26 @@
+{
+  "name": "readme.js",
+  "author": {
+    "name": "Robert Kieffer",
+    "email": "robert@broofa.com"
+  },
+  "version": "0.1.0",
+  "bin": {"runmd": "./cli.js"},
+  "description": "Runnable README files",
+  "license": "MIT",
+  "homepage": "https://github.com/broofa/runmd",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/broofa/runmd.git"
+  },
+  "dependencies": {
+    "minimist": "1.2.0"
+  },
+  "devDependencies": {
+    "mocha": "latest"
+  },
+  "scripts": {
+    "prepublish": "./cli.js README_js.md --output README.md",
+    "test": "mocha test"
+  }
+}
