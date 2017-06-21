@@ -149,6 +149,3 @@ the following works pretty well for me:
   * Open your output file in Chrome
 
 ... now any time you make a change to the input file, the rendered output will appear in Chrome shortly after
-
-----
-Page rendered from [src/README_js.md](src/README_js.md) by [![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)

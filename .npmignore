@@ -1,5 +1,5 @@
 build/
-react-example/
+src/
 package-lock.json
 node_modules
 .gitignore
