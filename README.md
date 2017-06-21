@@ -1,11 +1,13 @@
 # ![RunMD Logo](http://i.imgur.com/cJKo6bU.png)
 
-Evaluate your Markdown code blocks and annotate them with the output.
+Run code blocks in your markdown and annotate them with the output.
 
-Creating README files is a pain in the ass, especially when it comes to writing
-code samples.  Code gets out of date, authors get sloppy, details get omitted,
-etc.  This module makes allows you to show your readers code that they both you
-and they can trust to be executable, with the actual output they should expect.
+Creating README files is a pain, especially when it comes to writing code
+samples.  Code gets out of date, authors get sloppy, details get omitted, etc.
+RunMD takes the pain out of this process.
+
+With RunMD, your readers can trust your code blocks are runnable and that code
+output will be as-claimed.
 
 ## Install
 
@@ -22,12 +24,12 @@ Where `options` may be zero or more of:
   * `--watch` Watch `input_file` for changes and rerender
   * `--lame` Suppress attribution footer
 
-For example, to port an existing README.md file, do the following:
+For example, to port an existing README.md file:
 
 ```shell
 cp README.md README_js.md
 
-# Edit README_js.md to add Markdown Options below to your "```javascript" blocks
+# Edit README_js.md to add Markdown Options (below) to your "```javascript" blocks
 # Then ...
 
 runmd README_js.md --output README.md
@@ -35,11 +37,15 @@ runmd README_js.md --output README.md
 
 ## For Module Authors ...
 
-Want to avoid publishing with an out-of-date README file?  Add the following to
-`package.json` and `npm` will refuse to publish if any of the code in your
-README fails to run:
+Want to avoid publishing with an out-of-date README file?  Add a 'prepare'
+script to `package.json` scripts block:
 
-    "prepare": "runmd README_js.md --output README.md"
+    "scripts": {
+      "prepare": "runmd README_js.md --output README.md"
+    }
+
+and `npm` will refuse to publish if any of the code in your
+README fails to run:
 
 
 # Markdown Options
@@ -151,4 +157,4 @@ the following works pretty well for me:
 ... now any time you make a change to the input file, the rendered output will appear in Chrome shortly after
 
 ----
-Page rendered from [src/README_js.md](src/README_js.md) by [![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)
+Markdown generated from [src/README_js.md](src/README_js.md) by [![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)
