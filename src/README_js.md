@@ -12,7 +12,7 @@ output will be as-claimed.
 ## Install
 
 ```shell
-npm install readme_js
+npm install runmd
 ```
 
 ## Usage
@@ -52,7 +52,7 @@ README fails to run:
 
 ## --run
 
-Runs the script, appending any console.log output
+Runs the script, appending any console.log output.  E.g.:
 
     ```javascript --run
     console.log('Hello, World!');
@@ -66,16 +66,17 @@ Runs the script, appending any console.log output
     ⇒ Hello, World!
     ````
 
-(Note: This option may be omitted if other options are set
+(`--run` may be omitted if other options are present.)
 
 ## --context[=name]
 
 Create/apply a persistent execution context.
 
-This is useful interspersing code with explanatory text.  For example:
+Without this option, each code block runs in a new context (i.e. all state
+resets).  To share context across blocks, add `--context`, like so:
 
     ```javascript --context
-    let text = 'Hello';
+    let text = 'World';
     ```
 
     Continuing on ...
@@ -103,15 +104,16 @@ This is useful interspersing code with explanatory text.  For example:
 Run the script, but do not render the script source or output.  Mostly useful
 in conjunction with `--context` for setting up an execution context.
 
-    Blah blah markdown whatever
+    Welcome!
 
     ```javascript --context --hide
+    // Setup/utility code or whatever ...
     function hello() {
       console.log('Hello, World!');
     }
     ```
 
-    More blah blah markdown whatever
+    Here's a code snippet:
 
     ```javascript --context
     hello();
@@ -119,9 +121,9 @@ in conjunction with `--context` for setting up an execution context.
 
 ... becomes:
 
-    Blah blah markdown whatever
+    Welcome!
 
-    More blah blah markdown whatever
+    Here's a code snippet:
 
     ```javascript
     hello();
@@ -131,14 +133,16 @@ in conjunction with `--context` for setting up an execution context.
 
 ## setLineTransformer [Experimental]
 
-A custom line transformation function may be supplied as follows:
+RunMD also allows you to transform your markdown.  Just supply a line
+transformation function:
 
     ```javascript --hide
     setTransformLine((line, isRunning) => return !isRunning ? line.toUpperCase() : line);
     ```
 
-The `isRunning` argument will be `true` only for lines that that are
-interpreted as code by this module.  Transformations do not affect interpreted source, only how source is rendered.
+The `isRunning` argument will be `true` for any lines that are interpreted as
+code by this module.  Transformations do not affect interpreted source, only how
+source is rendered.
 
 Return `null` to omit the line from the rendered output.
 
