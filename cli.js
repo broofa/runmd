@@ -141,7 +141,7 @@ function render(...args) {
   if (stats.mtime > mtime) {
     mtime = stats.mtime;
     renderer.render(argv);
-    console.log('Rendered', argv._[0]);
+    if (argv.output) console.log('Rendered', argv.output);
   }
   if (argv.watch) setTimeout(render, 1000);
 }
