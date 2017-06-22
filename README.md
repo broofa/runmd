@@ -131,6 +131,22 @@ in conjunction with `--context` for setting up an execution context.
     ⇒ Hello, World!
     ```
 
+## "// RESULT"
+
+Inline values ***for single line expressions*** may be displayed by appending
+"// RESULT" to the end of a line.  Note: RunMD will error if the line is not a
+self-contained expression that can be evaluated.
+
+    ```javascript --run
+    ['Hello', ' World!'].join(','); // RESULT
+    ```
+
+... becomes:
+
+    ```javascript
+    ['Hello', ' World!'].join(','); // ⇨ 'Hello, World!'
+    ```
+
 ## setLineTransformer [Experimental]
 
 RunMD also allows you to transform your markdown.  Just supply a line

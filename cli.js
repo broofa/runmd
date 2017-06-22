@@ -10,8 +10,31 @@ const util = require('util');
 const vm = require('vm');
 
 const LINK = '[![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)';
+const RESULT_RE = /\/\/\s*RESULT\s*$/;
 
 const argv = minimist(process.argv.slice(2));
+
+// Class that for capturing the result of evaluating a line of code, and rendering the result
+class ResultLine {
+  constructor(id, line) {
+    this.id = id;
+    this.line = line;
+    this._result = util.inspect(undefined);
+  }
+
+  get bare() {return this.line.replace(RESULT_RE, '');}
+  get expression() {return this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');}
+  get prefix() {return this.line.replace(RESULT_RE, '').replace(/./g, ' ') + '// ';}
+  get scriptLine() {return `__.results[${this.id}].result = (${this.expression});`;}
+  set result(val) {this._result = util.inspect(val, {breakLength: 120});}
+
+  toString() {
+    const lines = this._result
+      .split('\n')
+      .map((line, i) => i == 0 ? '// \u21e8 ' + line: this.prefix + line);
+    return this.bare + lines.join('\n');
+  }
+}
 
 class Renderer {
   constructor(inputFile, outputFile) {
@@ -26,15 +49,23 @@ class Renderer {
   }
 
   render(options) {
-    let hide = false;
-    let transformLine = false;
-    const context = {};
-    let inputFile = this.inputFile;
-    let contexts = {};
     const outputLines = [];
+    const scriptLines = [];
+    let contexts = [];
+    let currentContext = null;
+    let hide = false;
+    let inCode = false;
+    let lineOffset = 0;
+    let runArgs;
+    let runContext = {};
+    let transformLine = false;
+
+    let inputFile = this.inputFile;
+    const source = fs.readFileSync(inputFile, 'utf8');
+    const lines = source.split('\n');
 
     function write(...args) {
-      if (!hide) outputLines.push(args.join(' '));
+      if (!hide) outputLines.push(...args);
     }
 
     function getContext(name) {
@@ -55,29 +86,28 @@ class Renderer {
           }
         },
 
+        __: {results: []},
+
+        process,
+
         setLineTransformer: function(f) {
           transformLine = f;
         },
 
-        require: requireLike(path.dirname(inputFile))
+        require: requireLike(inputFile)
       });
 
       if (name) contexts[name] = context;
       return context;
     }
 
-    const source = fs.readFileSync(inputFile, 'utf8');
-    const lines = source.split('\n');
-    const scriptLines = [];
-    let lineOffset = 0;
-    let runArgs;
-    let inCode = false;
-
     lines.forEach((line, lineNo) => {
       if (!runArgs) {
         runArgs = /^```javascript\s+(--.*)?/i.test(line) && RegExp.$1;
         if (runArgs) {
           runArgs = minimist(runArgs.split(/\s+/));
+          runContext = getContext(runArgs.context);
+
           hide = !!runArgs.hide;
           lineOffset = lineNo + 1;
           line = line.replace(/\s.*/, '');
@@ -86,17 +116,23 @@ class Renderer {
         const script = scriptLines.join('\n');
         scriptLines.length = 0;
         write('');
-        const context = getContext(runArgs.context);
-        vm.runInContext(script, context, {
+        vm.runInContext(script, runContext, {
           lineOffset,
           filename: inputFile
         });
+        runContext = null;
 
         runArgs = false;
         if (hide) line = null;
         hide = false;
       } else if (runArgs) {
-        scriptLines.push(line);
+        // Replace "// RESULT" comments with the result of the line-expression
+        if (!hide && RESULT_RE.test(line)) {
+          const resultId = runContext.__.results.length;
+          line = runContext.__.results[resultId] = new ResultLine(resultId, line);
+        }
+
+        scriptLines.push(line.scriptLine || line);
       }
 
       if (!hide && line != null) {
@@ -140,7 +176,12 @@ function render(...args) {
   const stats = fs.statSync(renderer.inputFile);
   if (stats.mtime > mtime) {
     mtime = stats.mtime;
-    renderer.render(argv);
+    try {
+      renderer.render(argv);
+    } catch (err) {
+      if (!argv.watch) throw err;
+      console.error(err);
+    }
     if (argv.output) console.log('Rendered', argv.output);
   }
   if (argv.watch) setTimeout(render, 1000);

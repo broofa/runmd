@@ -4,7 +4,7 @@
     "name": "Robert Kieffer",
     "email": "robert@broofa.com"
   },
-  "version": "0.1.4",
+  "version": "0.1.5",
   "bin": {
     "runmd": "./cli.js"
   },
@@ -23,7 +23,7 @@
     "mocha": "latest"
   },
   "scripts": {
-    "runmd": "./cli.js --watch --output README.md src/README_js.md",
+    "md": "./cli.js --watch --output README.md src/README_js.md",
     "prepare": "./cli.js src/README_js.md --output README.md",
     "test": "mocha test"
   }
