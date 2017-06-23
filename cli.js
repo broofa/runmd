@@ -24,16 +24,17 @@ class ResultLine {
     return this.line.replace(RESULT_RE, '');
   }
 
-  get expression() {
-    return this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');
-  }
-
   get prefix() {
     return this.line.replace(RESULT_RE, '').replace(/./g, ' ') + '// ';
   }
 
   get scriptLine() {
-    return `__.results[${this.id}].result = (${this.expression});`;
+    const trimmed = this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');
+    // You can't wrap an expression in ()'s if it also has a var declaration, so
+    // we use an imperfect regex to extract
+    /(^\s*(?:const|let|var)[\w\s,]*=\s)*(.*)/.test(trimmed);
+
+    return `${RegExp.$1} __.results[${this.id}].result = (${RegExp.$2});`;
   }
 
   set result(val) {
