@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
-const assert = require('assert');
 const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
 const requireLike = require('require-like');
-const stream = require('stream');
 const util = require('util');
 const vm = require('vm');
 
@@ -22,11 +20,25 @@ class ResultLine {
     this._result = util.inspect(undefined);
   }
 
-  get bare() {return this.line.replace(RESULT_RE, '');}
-  get expression() {return this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');}
-  get prefix() {return this.line.replace(RESULT_RE, '').replace(/./g, ' ') + '// ';}
-  get scriptLine() {return `__.results[${this.id}].result = (${this.expression});`;}
-  set result(val) {this._result = util.inspect(val, {breakLength: 120});}
+  get bare() {
+    return this.line.replace(RESULT_RE, '');
+  }
+
+  get expression() {
+    return this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');
+  }
+
+  get prefix() {
+    return this.line.replace(RESULT_RE, '').replace(/./g, ' ') + '// ';
+  }
+
+  get scriptLine() {
+    return `__.results[${this.id}].result = (${this.expression});`;
+  }
+
+  set result(val) {
+    this._result = util.inspect(val, {breakLength: 120});
+  }
 
   toString() {
     const lines = this._result
@@ -46,21 +58,23 @@ class Renderer {
       this.outputFile = outputFile && path.resolve(process.cwd(), outputFile);
       this.pathTo = path.relative(path.dirname(this.outputFile), this.inputFile);
     }
+
+    this.onOutputLine = null;
+    this.onRequire = null;
   }
 
   render(options) {
     const outputLines = [];
     const scriptLines = [];
-    let contexts = [];
-    let currentContext = null;
+    const contexts = [];
     let hide = false;
-    let inCode = false;
     let lineOffset = 0;
     let runArgs;
     let runContext = {};
     let transformLine = false;
+    let requirePath = false;
 
-    let inputFile = this.inputFile;
+    const inputFile = this.inputFile;
     const source = fs.readFileSync(inputFile, 'utf8');
     const lines = source.split('\n');
 
@@ -68,12 +82,12 @@ class Renderer {
       if (!hide) outputLines.push(...args);
     }
 
-    function getContext(name) {
-      transformLine = false;
-
+    const getContext = (name = 'default') => {
       if (name && contexts[name]) {
         return contexts[name];
       }
+
+      const require = requireLike(inputFile);
 
       const context = vm.createContext({
         console: {
@@ -90,11 +104,12 @@ class Renderer {
 
         process,
 
-        setLineTransformer: function(f) {
-          transformLine = f;
+        require: (path) => {
+          if (this.onRequire) path = this.onRequire(path);
+          return require(path);
         },
 
-        require: requireLike(inputFile)
+        runmd: this
       });
 
       if (name) contexts[name] = context;
@@ -136,7 +151,7 @@ class Renderer {
       }
 
       if (!hide && line != null) {
-        if (transformLine) line = transformLine(line, !!runArgs);
+        if (this.onOutputLine) line = this.onOutputLine(line, !!runArgs);
         if (line != null) write(line);
       }
     });
