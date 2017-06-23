@@ -9,6 +9,7 @@
     "runmd": "./cli.js"
   },
   "description": "Runnable README files",
+  "keywords": ["markdown", "readme"],
   "license": "MIT",
   "homepage": "https://github.com/broofa/runmd",
   "repository": {
