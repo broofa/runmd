@@ -31,7 +31,7 @@ class ResultLine {
   get scriptLine() {
     const trimmed = this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');
     // You can't wrap an expression in ()'s if it also has a var declaration, so
-    // we use an imperfect regex to extract
+    // so we do a bit of regex hacking to wrap just the expression part, here
     /(^\s*(?:const|let|var)[\w\s,]*=\s)*(.*)/.test(trimmed);
 
     return `${RegExp.$1} __.results[${this.id}].result = (${RegExp.$2});`;
@@ -87,8 +87,7 @@ class Renderer {
       if (name && contexts[name]) {
         return contexts[name];
       }
-
-      const require = requireLike(inputFile);
+      const require = requireLike(inputFile, true);
 
       const context = vm.createContext({
         console: {
