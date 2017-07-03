@@ -89,16 +89,38 @@ class Renderer {
       }
       const require = requireLike(inputFile, true);
 
-      const context = vm.createContext({
-        console: {
-          isRunmd: true,
-          log: function(...args) {
-            args = args.map(arg => typeof(arg) == 'string' ? arg: util.inspect(arg));
-            let _out = args.join(' ').split('\n');
-            _out = _out.map(line => '\u21d2 ' + line);
-            if (!hide) write(_out.join('\n'));
-          }
-        },
+      const log = function(...args) {
+        args = args.map(arg => typeof(arg) == 'string' ? arg: util.inspect(arg));
+        let _out = args.join(' ').split('\n');
+        _out = _out.map(line => '\u21d2 ' + line);
+        if (!hide) write(_out.join('\n'));
+      }
+
+      const consoleShim = {
+        isRunmd: true,
+        log: log,
+        warn: log,
+        error: log,
+      };
+
+      const _timers = [];
+      let _time = Date.now();
+
+      const timeoutShim = function(callback, delay) {
+        _timers.push({callback, time: _time + delay});
+        _timers.sort((a,b) => a.time < b.time ? -1 : (a.time > b.time ? 1 : 0));
+      };
+
+      timeoutShim.flush = function() {
+        let timer;
+        while(timer = _timers.shift()) {
+          _time = timer.time;
+          timer.callback();
+        }
+      };
+
+      let context = {
+        console: consoleShim,
 
         __: {results: []},
 
@@ -109,8 +131,12 @@ class Renderer {
           return require(path);
         },
 
-        runmd: this
-      });
+        runmd: this,
+
+        setTimeout: timeoutShim
+      };
+
+      context = vm.createContext(context);
 
       if (name) contexts[name] = context;
       return context;
@@ -131,10 +157,16 @@ class Renderer {
         const script = scriptLines.join('\n');
         scriptLines.length = 0;
         write('');
+
+        const _timeout = setTimeout;
+        setTimeout = runContext.setTimeout
         vm.runInContext(script, runContext, {
           lineOffset,
           filename: inputFile
         });
+
+        runContext.setTimeout.flush();
+        setTimeout = _timeout;
         runContext = null;
 
         runArgs = false;
@@ -199,6 +231,7 @@ function render(...args) {
     }
     if (argv.output) console.log('Rendered', argv.output);
   }
+
   if (argv.watch) setTimeout(render, 1000);
 }
 

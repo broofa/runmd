@@ -26,14 +26,25 @@ Where `options` may be zero or more of:
 
 For example, to port an existing README.md file:
 
-```shell
-cp README.md README_js.md
+    cp README.md README_js.md
 
-# Edit README_js.md to add Markdown Options (below) to your "```javascript" blocks
-# Then ...
+Edit README_js.md to add Markdown Options (below) to your ````javascript`
+blocks, then ...
 
-runmd README_js.md --output README.md
-```
+    runmd README_js.md --output README.md
+
+## Limitations
+
+RunMD scripts are run using [Node.js' `vm` module](https://nodejs.org/api/vm.html).
+This environment is limited in "interesting" ways, and RunMD runs fast and loose with some APIs.  Specifically:
+
+  * `console.log()` works, but no other `console` methods are supported at this
+  time
+  * `setTimeout()` works, but all timers fire immediately at the end of script
+  execution. `clearTimeout`, `setInterval`, and `clearInterval` are not
+  supported
+
+[Note: PRs fleshing out these and other missing APIs would be "well received"]
 
 ## NPM Integration
 
@@ -61,7 +72,9 @@ Runs the script, appending any console.log output.  E.g.:
     ⇒ Hello, World!
     ````
 
-(`--run` may be omitted if other options are present.)
+If no `--context` is provided, each script block is run in a new context.
+
+`--run` may be omitted if other options are present.
 
 ### --context[=name]
 
