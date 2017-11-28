@@ -72,24 +72,20 @@ Runs the script, appending any console.log output.  E.g.:
     ⇒ Hello, World!
     ````
 
-If no `--context` is provided, each script block is run in a new context.
-
 `--run` may be omitted if other options are present.
 
-### --context[=name]
+### --run [context_name]
 
-Create/apply a persistent execution context.
+If a `context_name` is provided, all blocks with that name will share the same
+runtime context. E.g.
 
-Without this option, each code block runs in a new context (i.e. all state
-resets).  To share context across blocks, add `--context`, like so:
-
-    ```javascript --context
+    ```javascript --run sample
     let text = 'World';
     ```
 
     Continuing on ...
 
-    ```javascript --context
+    ```javascript --run sample
     console.log(text);
     ```
 
@@ -107,23 +103,33 @@ resets).  To share context across blocks, add `--context`, like so:
     ⇒ Hello
     ```
 
+... but trying to reference `text` in a new context or other named context will
+fail:
+
+    ```javascript --run
+    console.log(text);
+    ```
+
+(Results in `ReferenceError: text is not defined`.)
+
 ### --hide
 
-Run the script, but do not render the script source or output.  Mostly useful
-in conjunction with `--context` for setting up an execution context.
+Run the script, but do not render the script source or output.  This is useful
+for setting up context that's necessary for code, but not germane to
+documentation.
 
     Welcome!
 
-    ```javascript --context --hide
+    ```javascript --run foo --hide
     // Setup/utility code or whatever ...
     function hello() {
       console.log('Hello, World!');
     }
     ```
 
-    Here's a code snippet:
+    Here is a code snippet:
 
-    ```javascript --context
+    ```javascript --run foo
     hello();
     ```
 
@@ -143,7 +149,7 @@ in conjunction with `--context` for setting up an execution context.
 
 Inline values ***for single line expressions*** may be displayed by appending
 "// RESULT" to the end of a line.  Note: RunMD will error if the line is not a
-self-contained expression that can be evaluated.
+self-contained, evaluate-able, expression.
 
     ```javascript --run
     ['Hello', ' World!'].join(','); // RESULT
@@ -157,17 +163,19 @@ self-contained expression that can be evaluated.
 
 ## runmd Object
 
+A global `runmd` object is provided all contexts, and supports the following:
+
 ### runmd.onRequire
 
-The `onRequire` event gives pages the opportunity to transform module
-require paths.  This is useful if module context in which you render markdown is
+The `onRequire` event gives pages the opportunity to transform module require
+paths.  This is useful if the module context in which you render markdown is
 different from what your readers will typically encounter.  (Often the case with
 npm-published modules).
 
     ```javascript --hide
     // Remap `require('uuid/*') to `require('./*')
     runmd.onRequire = function(path) {
-      return path.replace(/^uuid\//, '.');
+      return path.replace(/^uuid\//, './');
     }
     ```
 
@@ -187,14 +195,13 @@ source is rendered.
 
 Return `null` to omit the line from the rendered output.
 
-# Pro-tip: RunMD + Chrome + Markdown Preview Plus
+# Recommended workflow: RunMD + Chrome + Markdown Preview Plus
 
 There's more than one way to visualize changes to Markdown files as you edit
-them, but
-the following works pretty well for me:
+them, but the following works pretty well for me:
 
   * Install [the Markdown Preview Plus](https://goo.gl/iDhAL) Chrome
   * ... Allow it to access file URLs" (in chrome://extensions tab)
   * ... Set Reload Frequency to "1 second" (in the extension options)
   * Launch `runmd` with the `--watch` option to have it continuously re-render your output file as you make changes
-  * Open the output file in Chrome (should update any time you save input file)
+  * Open the output file in Chrome, and it will update in realtime as you make changes to your runmd input file(s)
