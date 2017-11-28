@@ -160,13 +160,15 @@ class Renderer {
 
         const _timeout = setTimeout;
         setTimeout = runContext.setTimeout
-        vm.runInContext(script, runContext, {
-          lineOffset,
-          filename: inputFile
-        });
-
-        runContext.setTimeout.flush();
-        setTimeout = _timeout;
+        try {
+          vm.runInContext(script, runContext, {
+            lineOffset,
+            filename: inputFile
+          });
+        } finally {
+          runContext.setTimeout.flush();
+          setTimeout = _timeout;
+        }
         runContext = null;
 
         runArgs = false;
