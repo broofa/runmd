@@ -24,7 +24,7 @@
     "require-like": "0.1.2"
   },
   "devDependencies": {
-    "mocha": "latest"
+    "mocha": "5.2.0"
   },
   "scripts": {
     "md": "./cli.js --watch --output README.md src/README_js.md",
