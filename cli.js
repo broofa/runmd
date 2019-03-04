@@ -12,7 +12,8 @@ const RESULT_RE = /\/\/\s*RESULT\s*$/;
 
 const argv = minimist(process.argv.slice(2));
 
-// Class that for capturing the result of evaluating a line of code, and rendering the result
+// Class for capturing the result of evaluating a line of code, and rendering the result
+const LARGE_RESULT_LINES = 3; // Number of lines that constitute a "large" result
 class ResultLine {
   constructor(id, line) {
     this.id = id;
@@ -24,6 +25,10 @@ class ResultLine {
     return this.line.replace(RESULT_RE, '');
   }
 
+  get indent() {
+    return this.line.replace(/\S.*/, '');
+  }
+
   get prefix() {
     return this.line.replace(RESULT_RE, '').replace(/./g, ' ') + '// ';
   }
@@ -31,20 +36,36 @@ class ResultLine {
   get scriptLine() {
     const trimmed = this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');
     // You can't wrap an expression in ()'s if it also has a var declaration, so
-    // so we do a bit of regex hacking to wrap just the expression part, here
+    // we do a bit of regex hacking to wrap just the expression part, here
     /(^\s*(?:const|let|var)[\w\s,]*=\s)*(.*)/.test(trimmed);
 
     return `${RegExp.$1} __.results[${this.id}].result = (${RegExp.$2});`;
   }
 
   set result(val) {
-    this._result = util.inspect(val, {breakLength: 120});
+    const MAX_LEN = 80;
+
+    this._result = util.inspect(val, {
+      depth: null,
+      breakLength: Math.max(40, MAX_LEN - this.prefix.length)
+    });
+
+    // If result spans multiple lines, move it to the next line
+    if (this._result.split('\n').length >= LARGE_RESULT_LINES) {
+      this._result = util.inspect(val, {depth: null});
+    }
   }
 
   toString() {
-    const lines = this._result
-      .split('\n')
-      .map((line, i) => i == 0 ? '// \u21e8 ' + line: this.prefix + line);
+    let lines = this._result.split('\n');
+    let prefix = this.prefix;
+
+    if (lines.length >= LARGE_RESULT_LINES) {
+      lines.unshift('');
+      prefix = this.indent + '  // ';
+    }
+
+    lines = lines.map((line, i) => i == 0 ? '// \u21e8 ' + line : prefix + line);
     return this.bare + lines.join('\n');
   }
 }
@@ -94,7 +115,7 @@ class Renderer {
       const require = requireLike(inputFile, true);
 
       const log = function(...args) {
-        args = args.map(arg => typeof(arg) == 'string' ? arg: util.inspect(arg));
+        args = args.map(arg => typeof(arg) == 'string' ? arg: util.inspect(arg, {depth: null}));
         let _out = args.join(' ').split('\n');
         _out = _out.map(line => '\u21d2 ' + line);
         if (!hide) write(_out.join('\n'));
