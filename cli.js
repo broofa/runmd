@@ -83,6 +83,9 @@ class Renderer {
 
     this.onOutputLine = null;
     this.onRequire = null;
+
+    // Make Date available for duck-patching
+    this.Date = Date;
   }
 
   render(options) {
