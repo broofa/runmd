@@ -13,7 +13,7 @@ const RESULT_RE = /\/\/\s*RESULT\s*$/;
 const argv = minimist(process.argv.slice(2));
 
 // Class for capturing the result of evaluating a line of code, and rendering the result
-const LARGE_RESULT_LINES = 3; // Number of lines that constitute a "large" result
+const LARGE_RESULT_LINES = 2; // Number of lines that constitute a "large" result
 class ResultLine {
   constructor(id, line) {
     this.id = id;
@@ -43,7 +43,7 @@ class ResultLine {
   }
 
   set result(val) {
-    const MAX_LEN = 80;
+    const MAX_LEN = 130; // Github horizontal scrollbars appear at ~140 chars
 
     this._result = util.inspect(val, {
       depth: null,
@@ -52,7 +52,10 @@ class ResultLine {
 
     // If result spans multiple lines, move it to the next line
     if (this._result.split('\n').length >= LARGE_RESULT_LINES) {
-      this._result = util.inspect(val, {depth: null});
+      this._result = util.inspect(val, {
+        depth: null,
+        breakLength: MAX_LEN - this.indent.length
+      });
     }
   }
 
