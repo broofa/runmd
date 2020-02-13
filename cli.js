@@ -185,7 +185,20 @@ class Renderer {
           line = line.replace(/\s.*/, '');
         }
       } else if (runArgs && /^```/.test(line)) {
-        const script = scriptLines.join('\n');
+        const script = scriptLines
+          .join('\n')
+          .replace(
+            /import\s*\{\s*([^\s]+)\s+as\s+([^\s]+)\s*\}\s*from\s*['"]([^']+)['"]/g,
+            'const { $1: $2 } = require("$3")',
+          ) // Naive esmodule import support: "import { X as Y } from 'Z'"
+          .replace(
+            /import\s*\{\s*([^\s]+)\s*\}\s*from\s*['"]([^']+)['"]/g,
+            'const { $1 } = require("$2")',
+          ) // Naive esmodule import support: "import { X } from 'Z'"
+          .replace(
+            /import\s([^\s]+)\sfrom\s*['"]([^']+)['"]/g,
+            'const $1 = require("$2")',
+          ); // Naive esmodule import support: "import X from 'Z'"
         scriptLines.length = 0;
         write('');
 
