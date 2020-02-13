@@ -6,8 +6,9 @@
   },
   "version": "1.2.1",
   "bin": {
-    "runmd": "./cli.js"
+    "runmd": "./runmd.js"
   },
+  "main": "./index.js",
   "description": "Runnable README files",
   "keywords": [
     "markdown",
@@ -24,6 +25,9 @@
     "require-like": "0.1.2"
   },
   "devDependencies": {
+    "babel-eslint": "10.0.3",
+    "eslint": "6.8.0",
+    "eslint-plugin-import": "2.20.1",
     "mocha": "5.2.0"
   },
   "scripts": {
