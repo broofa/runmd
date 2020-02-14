@@ -8,7 +8,6 @@ const {render} = require('.');
 const argv = minimist(process.argv.slice(2));
 
 function usage() {
-  console.log(argv);
   console.log('Usage: runmd input_file [--lame] [--watch] [--output=output_file]');
   process.exit(1);
 }
