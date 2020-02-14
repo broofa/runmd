@@ -1,5 +1,6 @@
 const util = require('util');
 const vm = require('vm');
+const path = require('path');
 const minimist = require('minimist');
 const requireLike = require('require-like');
 
@@ -95,6 +96,7 @@ function _createCache(runmd, inputName, write) {
 
     // require() function that operates relative to input file path, ignore
     // existing require() cache
+    if (!inputName) inputName = path.join(process.cwd(), '(stdin)');
     const contextRequire = requireLike(inputName, true);
 
     // Create console shim that renders to our output file
@@ -224,8 +226,8 @@ function render(inputText, options = {}) {
 
       let script = scriptLines.join('\n');
 
-      // Crude support for ES6-style imports. Transforms various "import"
-      // patterns into CommonJS require()'s via regex
+      // Limited support for ES6-style imports. Transforms some "import"
+      // patterns into CommonJS require()'s via regex.
       script = script
       // "import { X as Y } from 'Z'"
         .replace(
@@ -245,9 +247,6 @@ function render(inputText, options = {}) {
 
       // Clear out script lines
       scriptLines.length = 0;
-
-      // Empty line for formatting
-      _write('');
 
       // Replace setTimeout globally
       // (is this necessary since we define it in each context?!? I've

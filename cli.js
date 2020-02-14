@@ -31,7 +31,7 @@ if (outputName) {
 }
 
 /**
- * Render input file to output.  Args are what fs.watchFile passes.
+ * Render input file to output.  (args passed by fs.watchFile)
  */
 function run(curr, prev) {
   // Do nothing if file not modified

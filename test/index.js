@@ -1,13 +1,30 @@
+const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const Renderer = require('../lib/Renderer');
+const {render} = require('..');
+
+function transform(filename) {
+  const filepath = path.join(__dirname, filename);
+  const inputText = fs.readFileSync(filepath, 'utf8');
+  return render(inputText, {lame: true, inputName: `test/${path.basename(__filename)}`});
+}
 
 describe(__filename, () => {
-  it('hello', () => {
-    const file = path.join(__dirname, './hello.md');
-    const renderer = new Renderer(file);
-    const text = fs.readFileSync(file, 'utf8');
-    const md = renderer.render(text, null, {lame: true});
-    console.log(md);
+  it('basic', () => {
+    const md = transform('basic.md');
+    assert(/^# Header/m.test(md), 'has header');
+    assert(/res =.*2$/m.test(md), 'has result');
+    assert(/^# Footer/m.test(md), 'has footer');
+  });
+
+  it('module', () => {
+    const md = transform('module.md');
+    assert(/res =.*123$/m.test(md), 'has access to module exports');
+  });
+
+  it('es6', () => {
+    const md = transform('es6.md');
+    assert(/fooRes =.*123$/m.test(md), 'has access to module exports');
+    assert(/barRes =.*123$/m.test(md), 'has access to module exports');
   });
 });
