@@ -27,4 +27,11 @@ describe(__filename, () => {
     assert(/fooRes =.*123$/m.test(md), 'has access to module exports');
     assert(/barRes =.*123$/m.test(md), 'has access to module exports');
   });
+
+  it('contexts', () => {
+    const md = transform('contexts.md');
+    assert(/def =.*undefined/m.test(md), 'foo in unnamed context is not undefined');
+    assert(/alpha =.*alpha/m.test(md), 'foo in alpha context');
+    assert(/beta =.*beta/m.test(md), 'foo in beta context');
+  });
 });

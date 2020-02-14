@@ -49,6 +49,12 @@ This environment is limited in "interesting" ways, and RunMD runs fast and loose
 
 [Note: PRs fleshing out these and other missing APIs would be "well received"]
 
+### ES6 Imports
+
+**Some** ES6 import incantations will work, however this feature should be
+considered very experimental at this point.  Read the source [for
+details](https://github.com/broofa/runmd/blob/master/index.js#L229-L246).
+
 ## NPM Integration
 
 To avoid publishing when compilation of your README file fails:
@@ -210,4 +216,4 @@ them, but the following works pretty well for me:
   * Open the output file in Chrome, and it will update in realtime as you make changes to your runmd input file(s)
 
 ----
-Markdown generated from [src/README_js.md](src/README_js.md) by [![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)
+Markdown generated from README.md by [![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)

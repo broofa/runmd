@@ -46,6 +46,12 @@ This environment is limited in "interesting" ways, and RunMD runs fast and loose
 
 [Note: PRs fleshing out these and other missing APIs would be "well received"]
 
+### ES6 Imports
+
+**Some** ES6 import incantations will work, however this feature should be
+considered very experimental at this point.  Read the source [for
+details](https://github.com/broofa/runmd/blob/master/index.js#L229-L246).
+
 ## NPM Integration
 
 To avoid publishing when compilation of your README file fails:
