@@ -21,14 +21,14 @@
     "url": "https://github.com/broofa/runmd.git"
   },
   "dependencies": {
-    "minimist": "1.2.3",
+    "minimist": "1.2.5",
     "require-like": "0.1.2"
   },
   "devDependencies": {
-    "babel-eslint": "10.0.3",
-    "eslint": "6.8.0",
-    "eslint-plugin-import": "2.20.1",
-    "mocha": "5.2.0"
+    "babel-eslint": "10.1.0",
+    "eslint": "7.5.0",
+    "eslint-plugin-import": "2.22.0",
+    "mocha": "8.0.1"
   },
   "scripts": {
     "md": "./cli.js --watch --output README.md src/README_js.md",
