@@ -26,9 +26,9 @@
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",
-    "eslint": "7.5.0",
-    "eslint-plugin-import": "2.22.0",
-    "mocha": "8.0.1"
+    "eslint": "7.15.0",
+    "eslint-plugin-import": "2.22.1",
+    "mocha": "8.2.1"
   },
   "scripts": {
     "md": "./cli.js --watch --output README.md src/README_js.md",
