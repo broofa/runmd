@@ -294,7 +294,7 @@ function render(inputText, options = {}) {
     }
   });
 
-  const LINK = '[![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)';
+  const LINK = '[![RunMD Logo](https://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)';
   if (!lame) {
     _write('----');
     _write(outputName ?
