@@ -21,7 +21,7 @@
     "url": "https://github.com/broofa/runmd.git"
   },
   "dependencies": {
-    "minimist": "1.2.5",
+    "minimist": "1.2.6",
     "require-like": "0.1.2"
   },
   "devDependencies": {
