@@ -11,29 +11,29 @@ const LARGE_RESULT_LINES = 2; // Number of lines that constitute a "large" resul
  * Represents a line of source showing an evaluated expression
  */
 class ResultLine {
-  constructor(id, line) {
+  constructor (id, line) {
     this.id = id;
     this.line = line;
     this._result = util.inspect(undefined);
   }
 
-  /** Source w/out RESULT comment e*/
-  get bare() {
+  /** Source w/out RESULT comment e */
+  get bare () {
     return this.line.replace(RESULT_RE, '');
   }
 
   /** Source w/out indenting */
-  get undent() {
+  get undent () {
     return this.line.replace(/^\S.*/, '');
   }
 
   /** String needed to line up with RESULT comment */
-  get prefix() {
+  get prefix () {
     return this.line.replace(RESULT_RE, '').replace(/./g, ' ') + '// ';
   }
 
   /** Executable source needed to produce result */
-  get scriptLine() {
+  get scriptLine () {
     // Trim string (including trailing ';')
     const trimmed = this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');
 
@@ -47,7 +47,7 @@ class ResultLine {
   }
 
   /** Set result of evaluating line's expression */
-  set result(val) {
+  set result (val) {
     const MAX_LEN = 130; // Github horizontal scrollbars appear at ~140 chars
 
     this._result = util.inspect(val, {
@@ -65,7 +65,7 @@ class ResultLine {
   }
 
   /** Fully rendered line output */
-  toString() {
+  toString () {
     let lines = this._result.split('\n');
     let prefix = this.prefix;
 
@@ -83,7 +83,7 @@ class ResultLine {
  * Create a VM context factory.  Creates a function that creates / returns VM
  * contexts.
  */
-function _createCache(runmd, inputName, write) {
+function _createCache (runmd, inputName, write) {
   const contexts = new Map();
 
   /**
@@ -91,7 +91,7 @@ function _createCache(runmd, inputName, write) {
    *
    * @param {String} [name] of context to reuse / create
    */
-  return function(name) {
+  return function (name) {
     if (name && contexts.has(name)) return contexts.get(name);
 
     // require() function that operates relative to input file path, ignore
@@ -100,9 +100,9 @@ function _createCache(runmd, inputName, write) {
     const contextRequire = requireLike(inputName, true);
 
     // Create console shim that renders to our output file
-    const log = function(...args) {
+    const log = function (...args) {
       // Stringify args with util.inspect
-      args = args.map(arg => typeof(arg) == 'string' ? arg : util.inspect(arg, {depth: null}));
+      args = args.map(arg => typeof (arg) === 'string' ? arg : util.inspect(arg, { depth: null }));
       const lines = args.join(' ').split('\n').map(line => '\u21d2 ' + line);
 
       write(...lines);
@@ -110,7 +110,7 @@ function _createCache(runmd, inputName, write) {
     const consoleShim = {
       log,
       warn: log,
-      error: log,
+      error: log
     };
 
     // Crude setTimeout shim.  Callbacks are invoked immediately after script
@@ -118,12 +118,12 @@ function _createCache(runmd, inputName, write) {
     const _timers = [];
     let _time = Date.now();
 
-    const timeoutShim = function(callback, delay) {
-      _timers.push({callback, time: _time + delay});
+    const timeoutShim = function (callback, delay) {
+      _timers.push({ callback, time: _time + delay });
       _timers.sort((a, b) => a.time < b.time ? -1 : (a.time > b.time ? 1 : 0));
     };
 
-    timeoutShim.flush = function() {
+    timeoutShim.flush = function () {
       let timer;
       while (timer = _timers.shift()) { // eslint-disable-line no-cond-assign
         _time = timer.time;
@@ -135,7 +135,7 @@ function _createCache(runmd, inputName, write) {
     const context = vm.createContext({
       console: consoleShim,
 
-      __: {results: []},
+      __: { results: [] },
 
       process,
 
@@ -165,16 +165,18 @@ function _createCache(runmd, inputName, write) {
   * @param {String}  [options.outputName] name of output file
   * @param {Boolean}  [options.lame] if true, disables RunMD footer
   */
-function render(inputText, options = {}) {
-  const {inputName, outputName, lame} = options;
+function render (inputText, options = {}) {
+  const { inputName, outputName, lame } = options;
 
   // Warn people against editing the output file (only helps about 50% of the
   // time but, hey, we tried!)
-  const outputLines = inputName ? [
-    `<!--`,
+  const outputLines = inputName
+    ? [
+        '<!--',
     `  -- This file is auto-generated from ${inputName}. Changes should be made there.`,
-    `  -->`
-  ] : [];
+    '  -->'
+      ]
+    : [];
 
   const scriptLines = [];
   let lineOffset = 0;
@@ -186,7 +188,7 @@ function render(inputText, options = {}) {
   const lines = inputText.split('\n');
 
   // Add line(s) to output (when --hide flag not active)
-  function _write(...lines) {
+  function _write (...lines) {
     if (hide) return;
     outputLines.push(...lines.filter(line => line != null));
   }
@@ -232,17 +234,17 @@ function render(inputText, options = {}) {
       // "import { X as Y } from 'Z'"
         .replace(
           /import\s*\{\s*([^\s]+)\s+as\s+([^\s]+)\s*\}\s*from\s*['"]([^']+)['"]/g,
-          'const { $1: $2 } = require("$3")',
+          'const { $1: $2 } = require("$3")'
         )
       // "import { X } from 'Z'"
         .replace(
           /import\s*\{\s*([^\s]+)\s*\}\s*from\s*['"]([^']+)['"]/g,
-          'const { $1 } = require("$2")',
+          'const { $1 } = require("$2")'
         )
       // ES6: "import X from 'Z'"
         .replace(
           /import\s([^\s]+)\sfrom\s*['"]([^']+)['"]/g,
-          'const $1 = require("$2")',
+          'const $1 = require("$2")'
         );
 
       // Clear out script lines
@@ -297,9 +299,9 @@ function render(inputText, options = {}) {
   const LINK = '[![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)';
   if (!lame) {
     _write('----');
-    _write(outputName ?
-      `Markdown generated from [${inputName}](${inputName}) by ${LINK}` :
-      `Markdown generated by ${LINK}`);
+    _write(outputName
+      ? `Markdown generated from [${inputName}](${inputName}) by ${LINK}`
+      : `Markdown generated by ${LINK}`);
   }
 
   return outputLines.join('\n');

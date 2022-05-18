@@ -16,6 +16,9 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/broofa/runmd",
+  "ava": {
+    "files": ["test/*.spec.js"]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/broofa/runmd.git"
@@ -26,6 +29,7 @@
     "require-like": "0.1.2"
   },
   "devDependencies": {
+    "ava": "4.2.0",
     "eslint": "8.15.0",
     "eslint-plugin-import": "2.26.0"
   },

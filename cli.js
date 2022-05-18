@@ -3,11 +3,11 @@
 const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
-const {render} = require('.');
+const { render } = require('.');
 
 const argv = minimist(process.argv.slice(2));
 
-function usage() {
+function usage () {
   console.log('Usage: runmd input_file [--lame] [--watch] [--output=output_file]');
   process.exit(1);
 }
@@ -32,7 +32,7 @@ if (outputName) {
 /**
  * Render input file to output.  (args passed by fs.watchFile)
  */
-function run(curr, prev) {
+function run (curr, prev) {
   // Do nothing if file not modified
   if (curr && prev && curr.mtime === prev.mtime) return;
 
