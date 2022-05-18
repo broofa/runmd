@@ -5,7 +5,6 @@ const path = require('path');
 const minimist = require('minimist');
 const { render } = require('.');
 
-
 const argv = minimist(process.argv.slice(2));
 
 function usage () {
