@@ -42,14 +42,15 @@
     "ava": "4.2.0",
     "eslint": "8.15.0",
     "eslint-plugin-import": "2.26.0",
+    "husky": "8.0.1",
     "semistandard": "16.0.1"
   },
   "scripts": {
     "md": "./cli.js --watch --output README.md src/README_js.md",
-    "prepare": "npx husky install",
-    "release:test": "npx standard-version --dry-run",
-    "release": "npx standard-version",
-    "lint": "npx semistandard",
-    "test": "npx mocha"
+    "prepare": "husky install",
+    "x-release:test": "npx standard-version --dry-run",
+    "x-release": "npx standard-version",
+    "lint": "semistandard",
+    "test": "ava"
   }
 }
