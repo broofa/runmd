@@ -1,8 +1,12 @@
+name: release-please
+
 on:
   push:
-    branches:
-      - main
-name: release-please
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -10,9 +14,9 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           release-type: node
-          package-name: yargs
+          package-name: runmd
+          # token: ${{ secrets.GITHUB_TOKEN }}
       # - uses: actions/checkout@v2
       # - uses: actions/setup-node@v1
       #   with:
