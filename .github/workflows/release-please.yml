@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 16
       - run: npm install
-      - run: npm install -g npm
+      - run: npm install npm@latest -g
       - run: npm run lint
       - run: npm run test
       - run: npm publish
