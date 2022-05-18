@@ -17,28 +17,39 @@
   "license": "MIT",
   "homepage": "https://github.com/broofa/runmd",
   "ava": {
-    "files": ["test/*.spec.js"]
+    "files": [
+      "test/*.spec.js"
+    ]
+  },
+  "lint-staged": {
+    "**/*.js": "semistandard"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/broofa/runmd.git"
   },
   "dependencies": {
-    "@babel/eslint-parser": "7.17.0",
     "minimist": "1.2.6",
     "require-like": "0.1.2"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "17.0.0",
     "ava": "4.2.0",
     "eslint": "8.15.0",
-    "eslint-plugin-import": "2.26.0"
+    "eslint-plugin-import": "2.26.0",
+    "semistandard": "16.0.1"
   },
   "scripts": {
     "md": "./cli.js --watch --output README.md src/README_js.md",
-    "prepare": "./cli.js src/README_js.md --output README.md",
+    "prepare": "npx husky install",
     "release:test": "npx standard-version --dry-run",
     "release": "npx standard-version",
-    "lint": "eslint",
+    "lint": "npx semistandard",
     "test": "npx mocha"
   }
 }

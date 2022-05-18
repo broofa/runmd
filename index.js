@@ -47,7 +47,7 @@ class ResultLine {
   }
 
   /** Set result of evaluating line's expression */
-  set result (val) {
+  set result (val) { // eslint-disable-line accessor-pairs
     const MAX_LEN = 130; // Github horizontal scrollbars appear at ~140 chars
 
     this._result = util.inspect(val, {
@@ -74,7 +74,7 @@ class ResultLine {
       prefix = this.undent + '  // ';
     }
 
-    lines = lines.map((line, i) => i == 0 ? '// \u21e8 ' + line : prefix + line);
+    lines = lines.map((line, i) => i === 0 ? '// \u21e8 ' + line : prefix + line);
     return this.bare + lines.join('\n');
   }
 }
@@ -173,8 +173,8 @@ function render (inputText, options = {}) {
   const outputLines = inputName
     ? [
         '<!--',
-    `  -- This file is auto-generated from ${inputName}. Changes should be made there.`,
-    '  -->'
+      `  -- This file is auto-generated from ${inputName}. Changes should be made there.`,
+      '  -->'
       ]
     : [];
 
@@ -231,17 +231,17 @@ function render (inputText, options = {}) {
       // Limited support for ES6-style imports. Transforms some "import"
       // patterns into CommonJS require()'s via regex.
       script = script
-      // "import { X as Y } from 'Z'"
+        // "import { X as Y } from 'Z'"
         .replace(
           /import\s*\{\s*([^\s]+)\s+as\s+([^\s]+)\s*\}\s*from\s*['"]([^']+)['"]/g,
           'const { $1: $2 } = require("$3")'
         )
-      // "import { X } from 'Z'"
+        // "import { X } from 'Z'"
         .replace(
           /import\s*\{\s*([^\s]+)\s*\}\s*from\s*['"]([^']+)['"]/g,
           'const { $1 } = require("$2")'
         )
-      // ES6: "import X from 'Z'"
+        // ES6: "import X from 'Z'"
         .replace(
           /import\s([^\s]+)\sfrom\s*['"]([^']+)['"]/g,
           'const $1 = require("$2")'
