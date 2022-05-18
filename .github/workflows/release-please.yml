@@ -15,15 +15,21 @@ jobs:
           release-type: node
           package-name: runmd
           # token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
-      - run: npm install npm@latest -g
+          node-version: 16
+          registry-url: 'https://registry.npmjs.org'
+
       - run: npm install
+      - run: npm install npm@latest -g
       - run: npm run lint
       - run: npm run test
+
+#       - name: Setup upterm session
+#         uses: lhotari/action-upterm@v1
+
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
