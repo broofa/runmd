@@ -3,7 +3,7 @@
   -->
 # ![RunMD Logo](http://i.imgur.com/cJKo6bU.png)
 
-Run JS code blocks in markdown files and annotate them with the output.
+Run code blocks in your markdown and annotate them with the output.
 
 Creating README files is a pain, especially when it comes to writing code
 samples.  Code gets out of date, authors get sloppy, details get omitted, etc.
@@ -69,88 +69,57 @@ To avoid publishing when compilation of your README file fails:
 
 Runs the script, appending any console.log output.  E.g.:
 
-<table>
-<tr><th>Input</th><th>Output</th></tr>
-<tr>
-<td valign=top>
-<pre>
-```javascript --run
-console.log('Hello, World!');
-```
-</pre>
-</td>
-<td valign=top>
-<pre>
-```javascript
-console.log('Hello, World!');
-⇨ Hello, World!
-```
-</pre>
-</td>
-</tr>
-</table>
+    ```javascript --run
+    console.log('Hello, World!');
+    ```
+
+... becomes:
+
+    ```javascript
+    console.log('Hello, World!');
+
+    ⇒ Hello, World!
+    ````
 
 `--run` may be omitted if other options are present.
 
 ### --run [context_name]
 
-Allows for the creation of different JS contexts with different variable name spaces.  Blocks with the same context name share the same variables.  E.g...
+If a `context_name` is provided, all blocks with that name will share the same
+runtime context. E.g.
 
-<table>
-<tr><th>Input</th><th>Output</th></tr>
-<tr>
-<td valign=top>
-<pre>
-```javascript --run sample
-let text = 'World';
-```
-</pre>
-</td>
-<td valign=top>
-<pre>
-```javascript
-let text = 'Hello';
-```
-</pre>
-</td>
-</tr>
-<tr><td valign=top colspan=2>Continuing on ... </td></tr>
-<tr>
-<td valign=top>
-<pre>
-```javascript --run sample
-console.log(text);
-```
-</pre>
-</td>
-<td valign=top>
-<pre>
-```javascript
-console.log(text);
-⇨ Hello
-```
-</pre>
-</td>
-</tr>
-<tr>
-<td valign=top colspan=2>
-Attempting to reference state in a different context will error...
-</td>
-</tr>
-<tr>
-<td valign=top>
-<pre>
-```javascript --run
-console.log(text);
-```
-</pre>
-</td>
-<td valign=top>
-<em>ReferenceError: text is not defined</em>
-</td>
-</tr>
-</table>
+    ```javascript --run sample
+    let text = 'World';
+    ```
 
+    Continuing on ...
+
+    ```javascript --run sample
+    console.log(text);
+    ```
+
+... becomes:
+
+    ```javascript
+    let text = 'Hello';
+    ```
+
+    Continuing on ...
+
+    ```javascript
+    console.log(text);
+
+    ⇒ Hello
+    ```
+
+... but trying to reference `text` in a new context or other named context will
+fail:
+
+    ```javascript --run
+    console.log(text);
+    ```
+
+(Results in `ReferenceError: text is not defined`.)
 
 ### --hide
 
@@ -158,73 +127,52 @@ Run the script, but do not render the script source or output.  This is useful
 for setting up context that's necessary for code, but not germane to
 documentation.
 
-<table>
-<tr><th>Input</th><th>Output</th></tr>
-<tr>
-<td valign=top>
-<pre>
-Welcome!
-&nbsp;
-```javascript --run foo --hide
-// Setup/utility code or whatever ...
-function hello() {
-  console.log('Hello, World!');
-}
-```
-&nbsp;
-Here is a code snippet:
-&nbsp;
-```javascript --run foo
-hello();
-```
-</pre>
-</td>
-<td valign=top>
-<pre>
-Welcome!
-&nbsp;
-Here's a code snippet:
-&nbsp;
-```javascript
-hello();
-⇨ Hello, World!
-```
-</pre>
-</td>
-</tr>
-</table>
+    Welcome!
+
+    ```javascript --run foo --hide
+    // Setup/utility code or whatever ...
+    function hello() {
+      console.log('Hello, World!');
+    }
+    ```
+
+    Here is a code snippet:
+
+    ```javascript --run foo
+    hello();
+    ```
+
+... becomes:
+
+    Welcome!
+
+    Here's a code snippet:
+
+    ```javascript
+    hello();
+
+    ⇒ Hello, World!
+    ```
 
 ### "// RESULT"
 
-Result values may be displayed for ***for single line expressions*** by
-appending "// RESULT" to the end of a line.
+Inline values ***for single line expressions*** may be displayed by appending
+"// RESULT" to the end of a line.  Note: RunMD will error if the line is not a
+self-contained, evaluate-able, expression.
 
-RunMD will error if the line is not a self-contained, evaluate-able, expression.
+    ```javascript --run
+    ['Hello', ' World!'].join(','); // RESULT
+    ```
 
-<table>
-<tr><th>Input</th><th>Output</th></tr>
-<tr>
-<td valign=top>
-<pre>
-```javascript --run
-var x = 'foo' + 'bar'; // RESULT
-```
-</pre>
-</td>
-<td valign=top>
-<pre>
-```javascript
-var x = 'foo' + 'bar'; // ⇨ 'foobar'
-```
-</pre>
-</td>
-</tr>
-</table>
+... becomes:
+
+    ```javascript
+    ['Hello', ' World!'].join(','); // ⇨ 'Hello, World!'
+    ```
 
 ## runmd Object
 
-A global `runmd` object is provided to all contexts. It supports the following
-events:
+A global `runmd` object is provided all contexts, and supports the following:
 
 ### runmd.onRequire
 
@@ -268,4 +216,4 @@ them, but the following works pretty well for me:
   * Open the output file in Chrome, and it will update in realtime as you make changes to your runmd input file(s)
 
 ----
-Markdown generated by [![RunMD Logo](http://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)
+Markdown generated from [src/README_js.md](src/README_js.md) by [![RunMD Logo](https://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)

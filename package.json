@@ -49,9 +49,8 @@
   },
   "scripts": {
     "md": "./cli.js --watch --output README.md src/README_js.md",
-    "prepare": "husky install",
-    "x-release:test": "npx standard-version --dry-run",
-    "x-release": "npx standard-version",
+    "docs": "./cli.js --output README.md src/README_js.md",
+    "prepare": "husky install && npm run docs",
     "lint": "semistandard",
     "test": "ava"
   }
