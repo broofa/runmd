@@ -1,25 +1,26 @@
-name: release-please
 on:
-  push:
-    branches: [ master ]
-
   workflow_dispatch:
+  push:
+    branches:
+      - main
+
+name: release-please
 
 jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
-        id: release
         with:
           release-type: node
           package-name: runmd
-          # token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://registry.npmjs.org/'
 
       - run: npm install
       - run: npm install npm@latest -g
