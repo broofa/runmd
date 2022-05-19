@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ $default-branch ]
 
-name: release-please
+name: CI Tests
 
 jobs:
   ci:
