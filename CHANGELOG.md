@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.3.6](https://github.com/broofa/runmd/compare/v1.3.5...v1.3.6) (2022-05-19)
+
+
+### Bug Fixes
+
+* npm scripts ([57a5c43](https://github.com/broofa/runmd/commit/57a5c43703494d61f6975575a1747ab1dbe1c7d0))
+* release workflow ([cda2c14](https://github.com/broofa/runmd/commit/cda2c1479a7b8f42aa6b0ea93098f55379b0df1e))
+
 ### [1.3.5](https://github.com/broofa/runmd/compare/v1.3.4...v1.3.5) (2022-05-19)
 
 
