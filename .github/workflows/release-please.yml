@@ -15,22 +15,17 @@ jobs:
         with:
           release-type: node
           package-name: test-release-please
-          
+
       - uses: actions/checkout@v3
-#         if: ${{ steps.release.outputs.release_created }}
-        
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: 'https://registry.npmjs.org'
-#         if: ${{ steps.release.outputs.release_created }}
 
       - run: npm ci
-#         if: ${{ steps.release.outputs.release_created }}
 
       - run: npm test
-#         if: ${{ steps.release.outputs.release_created }}
-        
 
 #       - name: Setup upterm session
 #         uses: lhotari/action-upterm@v1
