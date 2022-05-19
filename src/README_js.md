@@ -1,4 +1,4 @@
-# ![RunMD Logo](http://i.imgur.com/cJKo6bU.png)
+# ![RunMD Logo](http://i.imgur.com/cJKo6bU.png)  ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
 
 Run code blocks in your markdown and annotate them with the output.
 
