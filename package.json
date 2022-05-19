@@ -48,10 +48,10 @@
     "semistandard": "16.0.1"
   },
   "scripts": {
-    "md": "./cli.js --watch --output README.md src/README_js.md",
+    "prepare": "husky install",
     "docs": "./cli.js --output README.md src/README_js.md",
-    "prepare": "husky install && npm run docs",
     "lint": "semistandard",
-    "test": "ava"
+    "test": "ava",
+    "ci": "npm lint && npm test && npm docs"
   }
 }
