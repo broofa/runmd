@@ -4,7 +4,7 @@ on:
     branches:
       - main
 
-name: release-please
+name: Release PR
 
 jobs:
   release-please:
@@ -16,19 +16,24 @@ jobs:
           release-type: node
           package-name: test-release-please
 
+      #
+      # On release, checkout and run tests before publishing...
+      #
+
       - uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.release_created }}
 
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: 'https://registry.npmjs.org'
+        if: ${{ steps.release.outputs.release_created }}
 
       - run: npm ci
+        if: ${{ steps.release.outputs.release_created }}
 
       - run: npm test
-
-#       - name: Setup upterm session
-#         uses: lhotari/action-upterm@v1
+        if: ${{ steps.release.outputs.release_created }}
 
       - run: npm publish
         env:
