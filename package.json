@@ -40,9 +40,11 @@
   "devDependencies": {
     "@commitlint/config-conventional": "17.0.0",
     "ava": "4.2.0",
+    "commitlint": "17.0.0",
     "eslint": "8.15.0",
     "eslint-plugin-import": "2.26.0",
     "husky": "8.0.1",
+    "lint-staged": "12.4.1",
     "semistandard": "16.0.1"
   },
   "scripts": {

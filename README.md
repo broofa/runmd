@@ -3,7 +3,7 @@
   -->
 # ![RunMD Logo](http://i.imgur.com/cJKo6bU.png)
 
-Run code blocks in your markdown and annotate them with the output.
+Run JS code blocks in markdown files and annotate them with the output.
 
 Creating README files is a pain, especially when it comes to writing code
 samples.  Code gets out of date, authors get sloppy, details get omitted, etc.
