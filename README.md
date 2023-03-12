@@ -1,6 +1,7 @@
 <!--
   -- This file is auto-generated from src/README_js.md. Changes should be made there.
   -->
+
 # ![RunMD Logo](http://i.imgur.com/cJKo6bU.png)  ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
 
 Run code blocks in your markdown and annotate them with the output.
@@ -215,5 +216,6 @@ them, but the following works pretty well for me:
   * Launch `runmd` with the `--watch` option to have it continuously re-render your output file as you make changes
   * Open the output file in Chrome, and it will update in realtime as you make changes to your runmd input file(s)
 
-----
-Markdown generated from [src/README_js.md](src/README_js.md) by [![RunMD Logo](https://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)
+---
+
+Markdown generated from [src/README_js.md](src/README_js.md) by <a href="https://github.com/broofa/runmd"><image height="12px" src="https://camo.githubusercontent.com/5c7c603cd1e6a43370b0a5063d457e0dabb74cf317adc7baba183acb686ee8d0/687474703a2f2f692e696d6775722e636f6d2f634a4b6f3662552e706e67" /></a>
