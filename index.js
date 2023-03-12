@@ -7,35 +7,40 @@ const requireLike = require('require-like');
 const RESULT_RE = /\/\/\s*RESULT\s*$/;
 const LARGE_RESULT_LINES = 2; // Number of lines that constitute a "large" result
 
+const RUNMD_LOGO =
+  'https://camo.githubusercontent.com/5c7c603cd1e6a43370b0a5063d457e0dabb74cf317adc7baba183acb686ee8d0/687474703a2f2f692e696d6775722e636f6d2f634a4b6f3662552e706e67';
+
 /**
  * Represents a line of source showing an evaluated expression
  */
 class ResultLine {
-  constructor (id, line) {
+  constructor(id, line) {
     this.id = id;
     this.line = line;
     this._result = util.inspect(undefined);
   }
 
   /** Source w/out RESULT comment e */
-  get bare () {
+  get bare() {
     return this.line.replace(RESULT_RE, '');
   }
 
   /** Source w/out indenting */
-  get undent () {
+  get undent() {
     return this.line.replace(/^\S.*/, '');
   }
 
   /** String needed to line up with RESULT comment */
-  get prefix () {
+  get prefix() {
     return this.line.replace(RESULT_RE, '').replace(/./g, ' ') + '// ';
   }
 
   /** Executable source needed to produce result */
-  get scriptLine () {
+  get scriptLine() {
     // Trim string (including trailing ';')
-    const trimmed = this.line.replace(RESULT_RE, '').replace(/^\s+|[\s;]+$/g, '');
+    const trimmed = this.line
+      .replace(RESULT_RE, '')
+      .replace(/^\s+|[\s;]+$/g, '');
 
     // You can't wrap an expression in ()'s if it also has a var declaration, so
     // we do a bit of regex hacking to wrap just the expression part, here
@@ -47,7 +52,7 @@ class ResultLine {
   }
 
   /** Set result of evaluating line's expression */
-  set result (val) { // eslint-disable-line accessor-pairs
+  set result(val) {
     const MAX_LEN = 130; // Github horizontal scrollbars appear at ~140 chars
 
     this._result = util.inspect(val, {
@@ -65,7 +70,7 @@ class ResultLine {
   }
 
   /** Fully rendered line output */
-  toString () {
+  toString() {
     let lines = this._result.split('\n');
     let prefix = this.prefix;
 
@@ -74,7 +79,9 @@ class ResultLine {
       prefix = this.undent + '  // ';
     }
 
-    lines = lines.map((line, i) => i === 0 ? '// \u21e8 ' + line : prefix + line);
+    lines = lines.map((line, i) =>
+      i === 0 ? '// \u21e8 ' + line : prefix + line
+    );
     return this.bare + lines.join('\n');
   }
 }
@@ -83,7 +90,7 @@ class ResultLine {
  * Create a VM context factory.  Creates a function that creates / returns VM
  * contexts.
  */
-function _createCache (runmd, inputName, write) {
+function _createCache(runmd, inputName, write) {
   const contexts = new Map();
 
   /**
@@ -102,8 +109,13 @@ function _createCache (runmd, inputName, write) {
     // Create console shim that renders to our output file
     const log = function (...args) {
       // Stringify args with util.inspect
-      args = args.map(arg => typeof (arg) === 'string' ? arg : util.inspect(arg, { depth: null }));
-      const lines = args.join(' ').split('\n').map(line => '\u21d2 ' + line);
+      args = args.map((arg) =>
+        typeof arg === 'string' ? arg : util.inspect(arg, { depth: null })
+      );
+      const lines = args
+        .join(' ')
+        .split('\n')
+        .map((line) => '\u21d2 ' + line);
 
       write(...lines);
     };
@@ -120,12 +132,12 @@ function _createCache (runmd, inputName, write) {
 
     const timeoutShim = function (callback, delay) {
       _timers.push({ callback, time: _time + delay });
-      _timers.sort((a, b) => a.time < b.time ? -1 : (a.time > b.time ? 1 : 0));
+      _timers.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
     };
 
     timeoutShim.flush = function () {
       let timer;
-      while (timer = _timers.shift()) { // eslint-disable-line no-cond-assign
+      while ((timer = _timers.shift())) {
         _time = timer.time;
         timer.callback();
       }
@@ -139,7 +151,7 @@ function _createCache (runmd, inputName, write) {
 
       process,
 
-      require: ref => {
+      require: (ref) => {
         if (runmd.onRequire) ref = runmd.onRequire(ref);
         return contextRequire(ref);
       },
@@ -157,15 +169,15 @@ function _createCache (runmd, inputName, write) {
 }
 
 /**
-  * Render RunMD-compatible markdown file
-  *
-  * @param {String} text to transform
-  * @param {Object}  [options]
-  * @param {String}  [options.inputName] name of input file
-  * @param {String}  [options.outputName] name of output file
-  * @param {Boolean}  [options.lame] if true, disables RunMD footer
-  */
-function render (inputText, options = {}) {
+ * Render RunMD-compatible markdown file
+ *
+ * @param {String} text to transform
+ * @param {Object}  [options]
+ * @param {String}  [options.inputName] name of input file
+ * @param {String}  [options.outputName] name of output file
+ * @param {Boolean}  [options.lame] if true, disables RunMD footer
+ */
+function render(inputText, options = {}) {
   const { inputName, outputName, lame } = options;
 
   // Warn people against editing the output file (only helps about 50% of the
@@ -173,8 +185,9 @@ function render (inputText, options = {}) {
   const outputLines = inputName
     ? [
         '<!--',
-      `  -- This file is auto-generated from ${inputName}. Changes should be made there.`,
-      '  -->'
+        `  -- This file is auto-generated from ${inputName}. Changes should be made there.`,
+        '  -->',
+        ''
       ]
     : [];
 
@@ -188,9 +201,9 @@ function render (inputText, options = {}) {
   const lines = inputText.split('\n');
 
   // Add line(s) to output (when --hide flag not active)
-  function _write (...lines) {
+  function _write(...lines) {
     if (hide) return;
-    outputLines.push(...lines.filter(line => line != null));
+    outputLines.push(...lines.filter((line) => line != null));
   }
 
   // State available to all contexts as `runmd`
@@ -254,7 +267,7 @@ function render (inputText, options = {}) {
       // (is this necessary since we define it in each context?!? I've
       // forgotten :-p )
       const _timeout = setTimeout;
-      setTimeout = runContext.setTimeout; // eslint-disable-line no-global-assign
+      setTimeout = runContext.setTimeout;
 
       // Run the script (W00t!)
       try {
@@ -267,7 +280,7 @@ function render (inputText, options = {}) {
         runContext.setTimeout.flush();
 
         // Restore system setTimeout
-        setTimeout = _timeout; // eslint-disable-line no-global-assign
+        setTimeout = _timeout;
       }
       runContext = null;
 
@@ -290,18 +303,23 @@ function render (inputText, options = {}) {
     // Add line to output
     if (!hide) {
       // onOutputLine for user script transforms
-      if (line != null && runmd.onOutputLine) line = runmd.onOutputLine(line, !!runArgs);
+      if (line != null && runmd.onOutputLine)
+        line = runmd.onOutputLine(line, !!runArgs);
 
       _write(line);
     }
   });
 
-  const LINK = '[![RunMD Logo](https://i.imgur.com/h0FVyzU.png)](https://github.com/broofa/runmd)';
+  const linkMarkdown = `<a href="https://github.com/broofa/runmd"><image height="12px" src="https://camo.githubusercontent.com/5c7c603cd1e6a43370b0a5063d457e0dabb74cf317adc7baba183acb686ee8d0/687474703a2f2f692e696d6775722e636f6d2f634a4b6f3662552e706e67" /></a>`;
   if (!lame) {
-    _write('----');
-    _write(outputName
-      ? `Markdown generated from [${inputName}](${inputName}) by ${LINK}`
-      : `Markdown generated by ${LINK}`);
+    _write('---');
+    _write('');
+    _write(
+      outputName
+        ? `Markdown generated from [${inputName}](${inputName}) by ${linkMarkdown}`
+        : `Markdown generated by ${linkMarkdown}`
+    );
+    _write('');
   }
 
   return outputLines.join('\n');

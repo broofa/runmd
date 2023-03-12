@@ -7,8 +7,10 @@ const { render } = require('.');
 
 const argv = minimist(process.argv.slice(2));
 
-function usage () {
-  console.log('Usage: runmd input_file [--lame] [--watch] [--output=output_file]');
+function usage() {
+  console.log(
+    'Usage: runmd input_file [--lame] [--watch] [--output=output_file]'
+  );
   process.exit(1);
 }
 
@@ -32,7 +34,7 @@ if (outputName) {
 /**
  * Render input file to output.  (args passed by fs.watchFile)
  */
-function run (curr, prev) {
+function run(curr, prev) {
   // Do nothing if file not modified
   if (curr && prev && curr.mtime === prev.mtime) return;
 
