@@ -1,5 +1,9 @@
 # Changelog
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [1.3.7](https://github.com/broofa/runmd/compare/v1.3.6...v1.3.7) (2023-03-12)
+
 ### [1.3.6](https://github.com/broofa/runmd/compare/v1.3.5...v1.3.6) (2022-05-19)
 
 Version created during testing of `release-please`.
