@@ -45,8 +45,9 @@
   "scripts": {
     "prepare": "husky install",
     "docs": "./cli.js --output README.md src/README_js.md",
-    "test:lint": "prettier --check .",
+    "lint:fix": "prettier --write .",
+    "lint:check": "prettier --check .",
     "test:unit": "ava",
-    "test": "run-p docs test:lint test:unit && git diff --quiet"
+    "test": "run-p docs lint:check test:unit && git diff --quiet"
   }
 }
