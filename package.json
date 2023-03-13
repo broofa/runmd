@@ -33,8 +33,7 @@
   "dependencies": {
     "minimist": "1.2.8",
     "prettier": "2.8.4",
-    "require-like": "0.1.2",
-    "standard-version": "9.5.0"
+    "require-like": "0.1.2"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "17.4.4",
@@ -49,7 +48,7 @@
     "docs:test": "npm run docs && git diff --quiet README.md",
     "lint:fix": "prettier --write .",
     "lint:test": "prettier --check .",
-    "release": "standard-version --no-verify",
+    "release": "echo \"This project uses release-please for releases\"",
     "test:unit": "ava",
     "test": "npm run docs:test && npm run lint:test && npm run test:unit"
   }
