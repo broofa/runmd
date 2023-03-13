@@ -1,5 +1,5 @@
 ```javascript --hide
-runmd.onRequire = path => path == 'bar' ? './foo' : path;
+runmd.onRequire = (path) => (path == 'bar' ? './foo' : path);
 ```
 
 ```javascript --run

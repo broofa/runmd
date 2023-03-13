@@ -1,6 +1,6 @@
+.env
 *.sw*
 .DS_Store
-.eslintcache
 node_modules
 npm-debug.*
 npm-debug.log

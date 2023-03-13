@@ -1,8 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Uncomment to lint just changed files (but how this works is a bit magical, so
-# I'm avoiding it for now)
-#npx --no-install lint-staged
-
 npm test

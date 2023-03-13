@@ -1,9 +1,9 @@
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 name: CI Tests
 
@@ -16,10 +16,10 @@ jobs:
         node-version: [14.x, 16.x, 18.x]
 
     steps:
-      - uses: actions/checkout@v3        
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm test

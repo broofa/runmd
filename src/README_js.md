@@ -1,9 +1,9 @@
-# ![RunMD Logo](http://i.imgur.com/cJKo6bU.png)  ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
+# ![RunMD Logo](http://i.imgur.com/cJKo6bU.png) ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
 
 Run code blocks in your markdown and annotate them with the output.
 
 Creating README files is a pain, especially when it comes to writing code
-samples.  Code gets out of date, authors get sloppy, details get omitted, etc.
+samples. Code gets out of date, authors get sloppy, details get omitted, etc.
 RunMD takes the pain out of this process.
 
 With RunMD, your readers can trust your code blocks are runnable and that code
@@ -20,9 +20,10 @@ npm install runmd
 `runmd [options] input_file`
 
 Where `options` may be zero or more of:
-  * `--output=output_file` file to write specify an output file
-  * `--watch` Watch `input_file` for changes and rerender
-  * `--lame` Suppress attribution footer
+
+- `--output=output_file` file to write specify an output file
+- `--watch` Watch `input_file` for changes and rerender
+- `--lame` Suppress attribution footer
 
 For example, to port an existing README.md file:
 
@@ -36,11 +37,11 @@ blocks, then ...
 ## Limitations
 
 RunMD scripts are run using [Node.js' `vm` module](https://nodejs.org/api/vm.html).
-This environment is limited in "interesting" ways, and RunMD runs fast and loose with some APIs.  Specifically:
+This environment is limited in "interesting" ways, and RunMD runs fast and loose with some APIs. Specifically:
 
-  * `console.log()` works, but no other `console` methods are supported at this
+- `console.log()` works, but no other `console` methods are supported at this
   time
-  * `setTimeout()` works, but all timers fire immediately at the end of script
+- `setTimeout()` works, but all timers fire immediately at the end of script
   execution. `clearTimeout`, `setInterval`, and `clearInterval` are not
   supported
 
@@ -49,7 +50,7 @@ This environment is limited in "interesting" ways, and RunMD runs fast and loose
 ### ES6 Imports
 
 **Some** ES6 import incantations will work, however this feature should be
-considered very experimental at this point.  Read the source [for
+considered very experimental at this point. Read the source [for
 details](https://github.com/broofa/runmd/blob/master/index.js#L229-L246).
 
 ## NPM Integration
@@ -64,7 +65,7 @@ To avoid publishing when compilation of your README file fails:
 
 ### --run
 
-Runs the script, appending any console.log output.  E.g.:
+Runs the script, appending any console.log output. E.g.:
 
     ```javascript --run
     console.log('Hello, World!');
@@ -120,7 +121,7 @@ fail:
 
 ### --hide
 
-Run the script, but do not render the script source or output.  This is useful
+Run the script, but do not render the script source or output. This is useful
 for setting up context that's necessary for code, but not germane to
 documentation.
 
@@ -153,8 +154,8 @@ documentation.
 
 ### "// RESULT"
 
-Inline values ***for single line expressions*** may be displayed by appending
-"// RESULT" to the end of a line.  Note: RunMD will error if the line is not a
+Inline values **_for single line expressions_** may be displayed by appending
+"// RESULT" to the end of a line. Note: RunMD will error if the line is not a
 self-contained, evaluate-able, expression.
 
     ```javascript --run
@@ -174,8 +175,8 @@ A global `runmd` object is provided all contexts, and supports the following:
 ### runmd.onRequire
 
 The `onRequire` event gives pages the opportunity to transform module require
-paths.  This is useful if the module context in which you render markdown is
-different from what your readers will typically encounter.  (Often the case with
+paths. This is useful if the module context in which you render markdown is
+different from what your readers will typically encounter. (Often the case with
 npm-published modules).
 
     ```javascript --hide
@@ -196,7 +197,7 @@ The `onOutputLine` event gives pages the opportunity to transform markdown outpu
     ```
 
 The `isRunning` argument will be `true` for any lines that are interpreted as
-code by this module.  Transformations do not affect interpreted source, only how
+code by this module. Transformations do not affect interpreted source, only how
 source is rendered.
 
 Return `null` to omit the line from the rendered output.
@@ -206,8 +207,8 @@ Return `null` to omit the line from the rendered output.
 There's more than one way to visualize changes to Markdown files as you edit
 them, but the following works pretty well for me:
 
-  * Install [the Markdown Preview Plus](https://goo.gl/iDhAL) Chrome
-  * ... Allow it to access file URLs" (in chrome://extensions tab)
-  * ... Set Reload Frequency to "1 second" (in the extension options)
-  * Launch `runmd` with the `--watch` option to have it continuously re-render your output file as you make changes
-  * Open the output file in Chrome, and it will update in realtime as you make changes to your runmd input file(s)
+- Install [the Markdown Preview Plus](https://goo.gl/iDhAL) Chrome
+- ... Allow it to access file URLs" (in chrome://extensions tab)
+- ... Set Reload Frequency to "1 second" (in the extension options)
+- Launch `runmd` with the `--watch` option to have it continuously re-render your output file as you make changes
+- Open the output file in Chrome, and it will update in realtime as you make changes to your runmd input file(s)
