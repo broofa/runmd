@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.10](https://github.com/broofa/runmd/compare/v1.3.9...v1.3.10) (2024-07-18)
+
+
+### Bug Fixes
+
+* tweak logo size ([c464f21](https://github.com/broofa/runmd/commit/c464f21de636ad0df9480fdd3eba02492565b0c6))
+
 ## [1.3.9](https://github.com/broofa/runmd/compare/v1.3.8...v1.3.9) (2023-03-13)
 
 
