@@ -54,13 +54,12 @@ async function run(curr, prev) {
     try {
       const prettier = require('prettier');
       const config = await prettier.resolveConfig(outputPath);
-      console.log('CONFIG', config);
       markdown = await prettier.format(markdown, {
         parser: 'markdown',
         ...config
       });
     } catch (err) {
-      // Ignore
+      console.log(`Formatting skipped (${err.message})`);
     }
 
     // Write to output (file or stdout)
