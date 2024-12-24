@@ -4,7 +4,7 @@
     "name": "Robert Kieffer",
     "email": "robert@broofa.com"
   },
-  "version": "1.4.0",
+  "version": "1.4.1",
   "bin": {
     "runmd": "./cli.js"
   },

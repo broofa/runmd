@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.1](https://github.com/broofa/runmd/compare/v1.4.0...v1.4.1) (2024-12-24)
+
+
+### Bug Fixes
+
+* prettier dependencies ([48d7667](https://github.com/broofa/runmd/commit/48d7667355ca3d7c086a6a1d5b5d4ddddb50bd18))
+* prettier dependencies ([#34](https://github.com/broofa/runmd/issues/34)) ([b0d8b10](https://github.com/broofa/runmd/commit/b0d8b1081a8db9723915e39c2eea286c53ecec07))
+
 ## [1.4.0](https://github.com/broofa/runmd/compare/v1.3.9...v1.4.0) (2024-12-24)
 
 
