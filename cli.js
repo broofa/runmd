@@ -34,7 +34,7 @@ if (outputName) {
 /**
  * Render input file to output.  (args passed by fs.watchFile)
  */
-function run(curr, prev) {
+async function run(curr, prev) {
   // Do nothing if file not modified
   if (curr && prev && curr.mtime === prev.mtime) return;
 
@@ -50,6 +50,19 @@ function run(curr, prev) {
       lame: argv.lame
     });
 
+    // Format using prettier (if available)
+    try {
+      const prettier = require('prettier');
+      const config = await prettier.resolveConfig(outputPath);
+      console.log('CONFIG', config);
+      markdown = await prettier.format(markdown, {
+        parser: 'markdown',
+        ...config
+      });
+    } catch (err) {
+      // Ignore
+    }
+
     // Write to output (file or stdout)
     if (outputPath) {
       fs.writeFileSync(outputPath, markdown);
@@ -64,7 +77,7 @@ function run(curr, prev) {
   }
 }
 
-run();
+run().catch(console.error);
 
 // If --watch, rerender when file changes
 if (argv.watch) fs.watchFile(inputPath, run);
