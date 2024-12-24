@@ -1,31 +1,37 @@
+# Relevent docs:
+# - https://github.com/googleapis/release-please
+# - https://github.com/googleapis/release-please-action
+
 on:
   workflow_dispatch:
+
   push:
     branches:
       - main
 
-name: Release PR
+permissions:
+  contents: write
+  pull-requests: write
+
+name: release-please
 
 jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
+          token: ${{ secrets.RUNMD_RELEASE_PLEASE_TOKEN }}
           release-type: node
-          package-name: test-release-please
 
-      #
-      # On release, checkout and run tests before publishing...
-      #
+      # Steps below handle publication to NPM
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
-
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
 
@@ -37,5 +43,5 @@ jobs:
 
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.RUNMD_NPM_RELEASE_TOKEN}}
         if: ${{ steps.release.outputs.release_created }}
