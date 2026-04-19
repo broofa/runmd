@@ -1,6 +1,7 @@
 .env
 *.sw*
 .DS_Store
+__runmd*
 node_modules
 npm-debug.*
 npm-debug.log

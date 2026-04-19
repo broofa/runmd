@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "allowImportingTsExtensions": true,
+
+    // Environment Settings
+    "module": "nodenext",
+    "target": "esnext",
+    "types": [ "node" ],
+
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Recommended Options
+    "strict": true,
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true
+  }
+}
