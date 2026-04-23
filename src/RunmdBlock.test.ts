@@ -53,7 +53,7 @@ describe('RunmdBlock.includeLine', () => {
           type: 'result',
           id: 2,
           source: 'total; // RESULT',
-          script: '__setRunmdResult(2, total);',
+          script: "__runmdSetResult(total, 'total; // RESULT', 2)",
         },
       ],
     },
@@ -72,13 +72,15 @@ describe('RunmdBlock.includeLine', () => {
           type: 'result',
           id: 1,
           source: 'const first = 1; // RESULT',
-          script: 'const first = __setRunmdResult(1, 1);',
+          script:
+            "const first = __runmdSetResult(1, 'const first = 1; // RESULT', 1)",
         },
         {
           type: 'result',
           id: 2,
           source: 'const second = 2; // RESULT',
-          script: 'const second = __setRunmdResult(2, 2);',
+          script:
+            "const second = __runmdSetResult(2, 'const second = 2; // RESULT', 2)",
         },
         {
           type: 'string',

@@ -9,6 +9,10 @@ RunMD takes the pain out of this process.
 With RunMD, your readers can trust your code blocks are runnable and that code
 output will be as-claimed.
 
+[!IMPORTANT] `runmd@2` is a complete rework of this project. Markdown files built for prior versions will not work.
+
+[!NOTE] `runmd@2` does not support CJS, and requires `node@24` or higher.
+
 ## Install
 
 ```shell
@@ -44,14 +48,6 @@ This environment is limited in "interesting" ways, and RunMD runs fast and loose
 - `setTimeout()` works, but all timers fire immediately at the end of script
   execution. `clearTimeout`, `setInterval`, and `clearInterval` are not
   supported
-
-[Note: PRs fleshing out these and other missing APIs would be "well received"]
-
-### ES6 Imports
-
-**Some** ES6 import incantations will work, however this feature should be
-considered very experimental at this point. Read the source [for
-details](https://github.com/broofa/runmd/blob/master/index.js#L229-L246).
 
 ## NPM Integration
 
@@ -172,7 +168,7 @@ self-contained, evaluate-able, expression.
 
 A global `runmd` object is provided all contexts, and supports the following:
 
-### runmd.onRequire
+### runmd.importMap
 
 The `onRequire` event gives pages the opportunity to transform module require
 paths. This is useful if the module context in which you render markdown is

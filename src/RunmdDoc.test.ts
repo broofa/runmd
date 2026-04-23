@@ -1,7 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import RunmdDoc from './RunmdDoc.ts';
-import { runDoc } from './runner.ts';
 
 const TESTS: {
   file: string;
@@ -33,13 +32,25 @@ describe('RunmdDoc.fromFile', () => {
       assert.equal(doc.parts.length, partCount, 'part count mismatch');
       assert.equal(doc.getBlocks().length, blockCount, 'block count mismatch');
 
-      await runDoc(doc);
+      await doc.render();
     });
   }
 
   test('throws if no file', async () => {
-    assert.rejects(() => RunmdDoc.fromFile('src/samples/does-not-exist.md'), {
-      code: 'ENOENT',
-    });
+    await assert.rejects(
+      () => RunmdDoc.fromFile('src/samples/does-not-exist.md'),
+      {
+        code: 'ENOENT',
+      },
+    );
+  });
+
+  test('throws on runtime error', async () => {
+    const doc = await RunmdDoc.fromContent(
+      'broken.md',
+      "```javascript --run\nthrow new Error('Dooh!');\n```",
+    );
+
+    await assert.rejects(() => doc.render());
   });
 });

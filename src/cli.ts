@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --no-warnings
 
 import { Command } from 'commander';
 import fs from 'node:fs';
@@ -7,10 +7,15 @@ import path from 'node:path';
 
 import RunmdDoc from './RunmdDoc.ts';
 
+const HEADER_TEMPLATE = `<!--
+  -- This file is auto-generated from INPUT_NAME. Changes should be made there.
+  -->
+`;
+
 const FOOTER_TEMPLATE = `
 
 ---
-Generated from [INPUT_NAME](INPUT_NAME) by <a href="https://github.com/broofa/runmd"><img height="13" alt="RunMD logo" src="https://i.ibb.co/wZ01ZCWL/logo.png" /></a>
+Generated from [INPUT_NAME](INPUT_NAME) by [RunMD](https://github.com/broofa/runmd)
 `;
 
 const program = new Command();
@@ -51,6 +56,10 @@ async function run(curr?: fs.Stats, prev?: fs.Stats) {
     // Render it
     const doc = await RunmdDoc.fromFile(inputPath);
     markdown = await doc.render();
+
+    markdown =
+      HEADER_TEMPLATE.replaceAll(/INPUT_NAME/g, inputName ?? '(stdin)') +
+      markdown;
 
     // Add footer (unless --no-footer)
     if (!noFooter) {

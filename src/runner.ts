@@ -16,7 +16,7 @@ export type RunBlocksResult = {
 export type RunmdResultMessage = {
   from: 'runmd';
   lineNum: number;
-  value: unknown;
+  result: string;
 };
 
 function isRunmdMessage(obj: unknown): obj is RunmdResultMessage {
@@ -62,8 +62,14 @@ async function runBlocks(
 
   let script: string = '';
   for (const block of blocks) {
-    script += `\n\n//---  Block at line ${block.lineNum}---\n`;
-    script += `${block.toScript()}\n\n`;
+    script += [
+      '//',
+      `// Block at line ${block.lineNum}`,
+      '//',
+      '',
+      `${block.toScript()};`,
+      '',
+    ].join('\n');
   }
 
   const sourcePath = doc.sourcePath
@@ -72,7 +78,7 @@ async function runBlocks(
   const sourceDir = path.dirname(sourcePath);
   const pathBase = path.join(
     sourceDir,
-    `__runmd-${path.basename(sourcePath)}-${firstBlock.lineNum}`,
+    `_runmd-${path.basename(sourcePath)}-${firstBlock.lineNum}`,
   );
 
   let setupScriptPath: string | undefined;
@@ -105,18 +111,27 @@ async function runBlocks(
           return;
         }
 
-        RunmdResultLine.setResultForLine(message.lineNum, message.value);
+        RunmdResultLine.setResultForLine(message.lineNum, message.result);
       });
 
       child.on('close', (exitCode, signal) => {
-        resolve({ scriptPath, exitCode, signal });
+        if (exitCode !== 0) {
+          reject(new Error(`Script exited with code ${exitCode ?? signal}`));
+        } else {
+          resolve({ scriptPath, exitCode, signal });
+        }
       });
-      child.on('error', reject);
+      child.on('error', (err) => {
+        console.log('EXIT CODE', child.exitCode);
+        reject(err);
+      });
     });
   } finally {
-    await unlink(scriptPath).catch(() => undefined);
-    if (setupScriptPath) {
-      await unlink(setupScriptPath).catch(() => undefined);
+    if (!setupBlock?.args.debug) {
+      await unlink(scriptPath).catch(() => undefined);
+      if (setupScriptPath) {
+        await unlink(setupScriptPath).catch(() => undefined);
+      }
     }
   }
 }

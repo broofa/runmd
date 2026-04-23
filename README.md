@@ -1,3 +1,7 @@
+<!--
+  -- This file is auto-generated from README_js.md. Changes should be made there.
+  -->
+
 # ![RunMD Logo](http://i.imgur.com/cJKo6bU.png) ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
 
 Run code blocks in your markdown and annotate them with the output.
@@ -8,6 +12,10 @@ RunMD takes the pain out of this process.
 
 With RunMD, your readers can trust your code blocks are runnable and that code
 output will be as-claimed.
+
+[!IMPORTANT] `runmd@2` is a complete rework of this project. Markdown files built for prior versions will not work.
+
+[!NOTE] `runmd@2` does not support CJS, and requires `node@24` or higher.
 
 ## Install
 
@@ -45,14 +53,6 @@ This environment is limited in "interesting" ways, and RunMD runs fast and loose
   execution. `clearTimeout`, `setInterval`, and `clearInterval` are not
   supported
 
-[Note: PRs fleshing out these and other missing APIs would be "well received"]
-
-### ES6 Imports
-
-**Some** ES6 import incantations will work, however this feature should be
-considered very experimental at this point. Read the source [for
-details](https://github.com/broofa/runmd/blob/master/index.js#L229-L246).
-
 ## NPM Integration
 
 To avoid publishing when compilation of your README file fails:
@@ -69,4 +69,4 @@ Runs the script, appending any console.log output. E.g.:
 
 ---
 
-Generated from [README_js.md](README_js.md) by <a href="https://github.com/broofa/runmd"><img height="13" alt="RunMD logo" src="https://i.ibb.co/wZ01ZCWL/logo.png" /></a>
+Generated from [README_js.md](README_js.md) by [RunMD](https://github.com/broofa/runmd)

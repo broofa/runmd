@@ -14,7 +14,7 @@ export class RunmdBlock {
   lines: (string | RunmdResultLine)[] = [];
   args: {
     run: string;
-    reset: boolean;
+    debug: boolean;
     hide?: boolean;
   };
 
@@ -36,7 +36,7 @@ export class RunmdBlock {
     cmd
       .option('--run', 'run in named context')
       .option('--hide', 'hide output')
-      .option('--reset', 'reset JS context before running block')
+      .option('--debug', 'enable debug mode mode (leave temp files around)')
       .parse(['', '', ...match[1].split(/\s+/).filter(Boolean)]);
 
     this.args = cmd.opts<RunmdBlock['args']>();
@@ -80,7 +80,7 @@ export class RunmdBlock {
   }
 
   toString() {
-    return this.lines.map(String).join('\n');
+    return ['```javascript', ...this.lines.map(String), '```'].join('\n');
   }
 
   toScript() {

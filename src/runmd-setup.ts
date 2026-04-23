@@ -1,10 +1,11 @@
 import { registerHooks } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { formatResult } from './RunmdResultLine.ts';
 import { type RunmdResultMessage } from './runner.ts';
 
 declare global {
-  var __setRunmdResult: (lineNum: number, value: unknown) => unknown;
+  var __runmdSetResult: (value: unknown, line: string, lineNum: number) => void;
 
   var runmd: {
     importMap?: Record<string, string>;
@@ -23,16 +24,20 @@ registerHooks({
         mappedSpecifier,
       );
     }
-
     return nextResolve(mappedSpecifier ?? specifier, context);
   },
 });
 
-globalThis.__setRunmdResult = (lineNum: number, value: unknown) => {
+globalThis.__runmdSetResult = function (
+  value: unknown,
+  line: string,
+  lineNum: number,
+) {
+  const result = formatResult(value, line, lineNum);
   const message: RunmdResultMessage = {
     from: 'runmd',
     lineNum,
-    value,
+    result,
   };
 
   // Pass result back to parent process
