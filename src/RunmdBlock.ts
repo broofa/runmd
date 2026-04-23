@@ -34,10 +34,23 @@ export class RunmdBlock {
     // Parse args out of the "```javascript..." line
     const cmd = new Command();
     cmd
+      // Prevent commander from exiting the process on error
+      .exitOverride()
+      // Suppress commander output
+      .configureOutput({ writeOut: () => {}, writeErr: () => {} })
       .option('--run', 'run in named context')
       .option('--hide', 'hide output')
-      .option('--debug', 'enable debug mode mode (leave temp files around)')
-      .parse(['', '', ...match[1].split(/\s+/).filter(Boolean)]);
+      .option('--debug', 'enable debug mode mode (leave temp files around)');
+    try {
+      cmd.parse(['', '', ...match[1].split(/\s+/).filter(Boolean)]);
+    } catch (err) {
+      let { message } = err as Error;
+      message = message.replace(/error:\s+/i, '');
+      const error = /*foo*/ new Error(
+        `Line ${lineNum}: ${message}\n  "${startLine}"\n`,
+      );
+      throw error;
+    }
 
     this.args = cmd.opts<RunmdBlock['args']>();
     if (typeof this.args.run !== 'string') {

@@ -84,7 +84,6 @@ async function run(curr?: fs.Stats, prev?: fs.Stats) {
       process.stdout.write('\n');
     }
   } catch (err) {
-    if (!watch) throw err;
     console.error(err);
   }
 }
