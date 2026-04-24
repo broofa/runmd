@@ -26,7 +26,7 @@ program
   .option('-w, --watch', 'watch for changes')
   .parse();
 
-const inputName = program.args[0]!;
+const inputName = program.args[0] || '(stding)';
 const options = program.opts();
 const { noFooter, watch, output: outputName } = options;
 
@@ -48,11 +48,8 @@ async function run(curr?: fs.Stats, prev?: fs.Stats) {
   // Do nothing if file not modified
   if (curr && prev && curr.mtime === prev.mtime) return;
 
-  let markdown;
+  let markdown: string;
   try {
-    // Read input file
-    const inputText = fs.readFileSync(inputPath, 'utf8');
-
     // Render it
     const doc = await RunmdDoc.fromFile(inputPath);
     markdown = await doc.render();

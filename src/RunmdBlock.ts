@@ -28,7 +28,7 @@ export class RunmdBlock {
   constructor(startLine: string, lineNum: number) {
     this.lineNum = lineNum;
     const match = startLine.match(BLOCK_START_REGEX);
-    if (!match || !match[1]) {
+    if (!match?.[1]) {
       throw new Error(`Invalid start line: ${startLine}`);
     }
 

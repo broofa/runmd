@@ -37,7 +37,6 @@ export default class RunmdDoc {
   #parse(content: string) {
     const parts: (string | RunmdBlock)[] = [];
     let currentBlock: RunmdBlock | undefined;
-    let nextBlockID = 0;
 
     let lineNum = 0;
     for (const line of content.split('\n')) {
@@ -47,7 +46,6 @@ export default class RunmdDoc {
         currentBlock = RunmdBlock.fromStartLine(line, lineNum);
         if (currentBlock) {
           parts.push(currentBlock);
-          nextBlockID++;
         } else {
           parts.push(line);
         }

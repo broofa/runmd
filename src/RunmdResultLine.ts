@@ -41,7 +41,7 @@ export class RunmdResultLine {
     // we do a bit of regex hacking to wrap just the expression part, here
     const match = trimmed.match(/(^\s*(?:const|let|var)[\w\s,]*=\s)*(.*)/);
 
-    const [, declaration, expression] = match!;
+    const [, declaration, expression] = match ?? [];
     return `${declaration ?? ''}__runmdSetResult(${expression ?? 'undefined'}, '${this.line.replaceAll(/'/g, "\\'")}', ${this.lineNum})`;
   }
 
@@ -50,7 +50,7 @@ export class RunmdResultLine {
     return this.line.replace(RESULT_RE, this.result);
   }
 }
-export function formatResult(val: unknown, line: string, lineNum: number) {
+export function formatResult(val: unknown, line: string) {
   const MAX_LEN = 130;
 
   let indent = line.replace(RESULT_RE, '').replaceAll(/./g, ' ');

@@ -21,11 +21,10 @@ export type RunmdResultMessage = {
 };
 
 function isRunmdMessage(obj: unknown): obj is RunmdResultMessage {
-  return (obj as any)?.from === 'runmd';
+  return (obj as RunmdResultMessage)?.from === 'runmd';
 }
 
 export async function runDoc(doc: RunmdDoc) {
-  const jobno = 0;
   let setupBlock: RunmdBlock | undefined;
   let jobBlocks: RunmdBlock[] = [];
 

@@ -40,7 +40,7 @@ registerHooks({
 });
 
 globalThis.__runmdSetResult = <T>(value: T, line: string, lineNum: number) => {
-  const result = formatResult(value, line, lineNum);
+  const result = formatResult(value, line);
   const message: RunmdResultMessage = {
     from: 'runmd',
     lineNum,
@@ -58,5 +58,5 @@ function isImportMap(obj: unknown): obj is ImportMap {
     return false;
   }
   const keys = Object.keys(obj as object);
-  return keys.length == 0 || (keys.length === 1 && keys[0] === 'imports');
+  return keys.length === 0 || (keys.length === 1 && keys[0] === 'imports');
 }

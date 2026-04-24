@@ -24,7 +24,7 @@ describe('RunmdResultLine', () => {
   test('setResult renders short results inline', () => {
     const line = new RunmdResultLine('const total = 1 + 2; // RESULT', 1);
 
-    line.setResult(formatResult(3, line.line, line.lineNum));
+    line.setResult(formatResult(3, line.line));
 
     assert.equal(line.toString(), 'const total = 1 + 2; // ⇨ 3');
   });
@@ -38,8 +38,7 @@ describe('RunmdResultLine', () => {
           index,
           value: 'x'.repeat(20)
         })),
-        line.line,
-        line.lineNum
+        line.line
       )
     );
 
@@ -54,8 +53,7 @@ describe('RunmdResultLine', () => {
         110, 192, 189, 127, 17, 192, 67, 218, 151, 94, 42, 138, 217, 235, 174,
         11
       ]),
-      line.line,
-      line.lineNum
+      line.line
     );
 
     assert.match(result, /^\/\/ ⇨ \n {2}\/\/ Uint8Array/);
