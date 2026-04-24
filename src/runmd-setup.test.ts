@@ -24,7 +24,7 @@ test('runmd.importMap remaps module specifiers', async () => {
       const mod = await import('alias');
       process.stdout.write(String(mod.answer));
     `,
-    'utf8',
+    'utf8'
   );
 
   try {
@@ -33,8 +33,8 @@ test('runmd.importMap remaps module specifiers', async () => {
       ['--import', setupPath, entryPath],
       {
         cwd: tempDir,
-        encoding: 'utf8',
-      },
+        encoding: 'utf8'
+      }
     );
 
     assert.equal(result.status, 0, result.stderr);

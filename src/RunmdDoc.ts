@@ -6,7 +6,7 @@ import { runDoc } from './runner.ts';
 
 export const BOOTSTRAP_IMPORT_PATH = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  'runmd-setup.ts',
+  'runmd-setup.ts'
 );
 
 /**
@@ -37,7 +37,6 @@ export default class RunmdDoc {
   #parse(content: string) {
     const parts: (string | RunmdBlock)[] = [];
     let currentBlock: RunmdBlock | undefined;
-    let nextBlockID = 0;
 
     let lineNum = 0;
     for (const line of content.split('\n')) {
@@ -47,8 +46,6 @@ export default class RunmdDoc {
         currentBlock = RunmdBlock.fromStartLine(line, lineNum);
         if (currentBlock) {
           parts.push(currentBlock);
-          nextBlockID++;
-          continue;
         } else {
           parts.push(line);
         }
@@ -71,7 +68,7 @@ export default class RunmdDoc {
     await runDoc(this);
 
     const parts = this.parts.filter(
-      (part) => !(isRunmdBlock(part) && (part.isSetup() || part.isHidden())),
+      (part) => !(isRunmdBlock(part) && (part.isSetup() || part.isHidden()))
     );
 
     return parts.map(String).join('\n');

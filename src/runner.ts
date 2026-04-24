@@ -3,8 +3,9 @@
 import { spawn } from 'node:child_process';
 import { unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { RunmdBlock } from './RunmdBlock.ts';
-import RunmdDoc, { BOOTSTRAP_IMPORT_PATH } from './RunmdDoc.ts';
+import type { RunmdBlock } from './RunmdBlock.ts';
+import type RunmdDoc from './RunmdDoc.ts';
+import { BOOTSTRAP_IMPORT_PATH } from './RunmdDoc.ts';
 import { RunmdResultLine } from './RunmdResultLine.ts';
 
 export type RunBlocksResult = {
@@ -20,11 +21,10 @@ export type RunmdResultMessage = {
 };
 
 function isRunmdMessage(obj: unknown): obj is RunmdResultMessage {
-  return (obj as any)?.from === 'runmd';
+  return (obj as RunmdResultMessage)?.from === 'runmd';
 }
 
 export async function runDoc(doc: RunmdDoc) {
-  let jobno = 0;
   let setupBlock: RunmdBlock | undefined;
   let jobBlocks: RunmdBlock[] = [];
 
@@ -55,7 +55,7 @@ export async function runDoc(doc: RunmdDoc) {
 async function runBlocks(
   doc: RunmdDoc,
   setupBlock: RunmdBlock | undefined,
-  blocks: RunmdBlock[],
+  blocks: RunmdBlock[]
 ) {
   const firstBlock = blocks[0];
   if (!firstBlock) return;
@@ -68,7 +68,7 @@ async function runBlocks(
       '//',
       '',
       `${block.toScript()};`,
-      '',
+      ''
     ].join('\n');
   }
 
@@ -78,7 +78,7 @@ async function runBlocks(
   const sourceDir = path.dirname(sourcePath);
   const pathBase = path.join(
     sourceDir,
-    `_runmd-${path.basename(sourcePath)}-${firstBlock.lineNum}`,
+    `_runmd-${path.basename(sourcePath)}-${firstBlock.lineNum}`
   );
 
   let setupScriptPath: string | undefined;
@@ -100,7 +100,7 @@ async function runBlocks(
       // console.log('RUNNING:', 'node', ...nodeArgs);
       const child = spawn(process.execPath, nodeArgs, {
         cwd: sourceDir,
-        stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+        stdio: ['ignore', 'pipe', 'pipe', 'ipc']
       });
 
       child.stdout?.pipe(process.stdout);

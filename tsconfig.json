@@ -7,7 +7,7 @@
     // Environment Settings
     "module": "nodenext",
     "target": "esnext",
-    "types": [ "node" ],
+    "types": ["node"],
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,

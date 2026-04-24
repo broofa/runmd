@@ -10,16 +10,16 @@ describe('RunmdBlock.fromStartLine', () => {
       startLine: '```javascript --run --hide',
       expectedArgs: {
         run: 'main',
-        hide: true,
-      },
+        hide: true
+      }
     },
     {
       name: 'accepts uppercase javascript fences',
       startLine: '```JavaScript --run',
       expectedArgs: {
-        run: 'main',
-      },
-    },
+        run: 'main'
+      }
+    }
   ];
 
   for (const { name, startLine, expectedArgs } of TESTS) {
@@ -47,15 +47,15 @@ describe('RunmdBlock.includeLine', () => {
       expectedLines: [
         {
           type: 'string',
-          value: 'const total = 1 + 2;',
+          value: 'const total = 1 + 2;'
         },
         {
           type: 'result',
           id: 2,
           source: 'total; // RESULT',
-          script: "__runmdSetResult(total, 'total; // RESULT', 2)",
-        },
-      ],
+          script: "__runmdSetResult(total, 'total; // RESULT', 2)"
+        }
+      ]
     },
     {
       name: 'assigns incrementing ids to multiple result lines',
@@ -64,7 +64,7 @@ describe('RunmdBlock.includeLine', () => {
         'const first = 1; // RESULT',
         'const second = 2; // RESULT',
         'console.log(second);',
-        '```',
+        '```'
       ].join('\n'),
       expectedNextResultLineId: 2,
       expectedLines: [
@@ -73,21 +73,21 @@ describe('RunmdBlock.includeLine', () => {
           id: 1,
           source: 'const first = 1; // RESULT',
           script:
-            "const first = __runmdSetResult(1, 'const first = 1; // RESULT', 1)",
+            "const first = __runmdSetResult(1, 'const first = 1; // RESULT', 1)"
         },
         {
           type: 'result',
           id: 2,
           source: 'const second = 2; // RESULT',
           script:
-            "const second = __runmdSetResult(2, 'const second = 2; // RESULT', 2)",
+            "const second = __runmdSetResult(2, 'const second = 2; // RESULT', 2)"
         },
         {
           type: 'string',
-          value: 'console.log(second);',
-        },
-      ],
-    },
+          value: 'console.log(second);'
+        }
+      ]
+    }
   ];
 
   for (const {
@@ -95,7 +95,7 @@ describe('RunmdBlock.includeLine', () => {
     startLine,
     script,
     expectedNextResultLineId,
-    expectedLines,
+    expectedLines
   } of TESTS) {
     test(name, () => {
       const block = new RunmdBlock(startLine, 1);
@@ -106,7 +106,7 @@ describe('RunmdBlock.includeLine', () => {
       assert.deepEqual(includeResults, [
         true,
         ...Array(expectedLines.length - 1).fill(true),
-        false,
+        false
       ]);
       assert.equal(block.nextResultLineId, expectedNextResultLineId);
       assert.equal(block.lines.length, expectedLines.length);
