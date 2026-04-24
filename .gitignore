@@ -1,7 +1,9 @@
 .env
 *.sw*
 .DS_Store
+_runmd*
 node_modules
 npm-debug.*
 npm-debug.log
 .env
+.vscode/settings.json

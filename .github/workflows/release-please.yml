@@ -1,4 +1,4 @@
-# Relevent docs:
+# Relevant docs:
 # - https://github.com/googleapis/release-please
 # - https://github.com/googleapis/release-please-action
 
@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 name: release-please
 
@@ -22,16 +23,17 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          token: ${{ secrets.RUNMD_RELEASE_PLEASE_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           release-type: node
 
-      # Steps below handle publication to NPM
+      - run: echo "Release created?... ${{ steps.release.outputs.release_created }}"
 
+      # Steps below handle publication to NPM
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
 
@@ -41,7 +43,5 @@ jobs:
       - run: npm test
         if: ${{ steps.release.outputs.release_created }}
 
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.RUNMD_NPM_RELEASE_TOKEN}}
+      - run: npm publish --provenance --access public
         if: ${{ steps.release.outputs.release_created }}
