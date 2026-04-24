@@ -1,4 +1,4 @@
-#!/usr/bin/env node --no-warnings
+#!/usr/bin/env -S node --no-warnings
 
 import { Command } from 'commander';
 import fs from 'node:fs';
@@ -15,14 +15,14 @@ const HEADER_TEMPLATE = `<!--
 const FOOTER_TEMPLATE = `
 
 ---
-Generated from [INPUT_NAME](INPUT_NAME) by [RunMD](https://github.com/broofa/runmd)
+Generated from [INPUT_NAME](INPUT_NAME) by [\`runmd\`](https://github.com/broofa/runmd)
 `;
 
 const program = new Command();
 program
-  .argument('[input_file]', 'markdown file to process')
+  .argument('<input_file>', 'markdown file to process')
   .option('-o, --output <file>', 'output file')
-  .option('--no-footer', 'remove RunMD footer')
+  .option('--no-footer', "omit runmd's standard footer")
   .option('-w, --watch', 'watch for changes')
   .parse();
 
@@ -57,16 +57,11 @@ async function run(curr?: fs.Stats, prev?: fs.Stats) {
     const doc = await RunmdDoc.fromFile(inputPath);
     markdown = await doc.render();
 
-    markdown =
-      HEADER_TEMPLATE.replaceAll(/INPUT_NAME/g, inputName ?? '(stdin)') +
-      markdown;
+    markdown = HEADER_TEMPLATE.replaceAll(/INPUT_NAME/g, inputName) + markdown;
 
     // Add footer (unless --no-footer)
     if (!noFooter) {
-      markdown += FOOTER_TEMPLATE.replaceAll(
-        /INPUT_NAME/g,
-        inputName ?? '(stdin)',
-      );
+      markdown += FOOTER_TEMPLATE.replaceAll(/INPUT_NAME/g, inputName);
     }
 
     // Format with prettier, if available
@@ -77,7 +72,9 @@ async function run(curr?: fs.Stats, prev?: fs.Stats) {
       fs.writeFileSync(outputPath, markdown);
 
       if (watch) {
-        console.log('Rendered', outputName);
+        console.log(
+          `Rendered ${outputName} at ${new Date().toLocaleTimeString()}`,
+        );
       }
     } else {
       process.stdout.write(markdown);

@@ -1,5 +1,5 @@
 ```javascript --hide
-runmd.importMap = { foobar: './foo.ts' };
+runmd.importMap = { imports: { foobar: './foo.ts' } };
 ```
 
 ```javascript --run

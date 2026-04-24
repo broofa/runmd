@@ -4,12 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { formatResult } from './RunmdResultLine.ts';
 import { type RunmdResultMessage } from './runner.ts';
 
-declare global {
-  var __runmdSetResult: (value: unknown, line: string, lineNum: number) => void;
+type ImportMap = {
+  imports: Record<string, string>;
+};
 
-  var runmd: {
-    importMap?: Record<string, string>;
-  };
+declare global {
+  var __runmdSetResult: <T>(value: T, line: string, lineNum: number) => T;
+
+  var runmd: { importMap?: ImportMap };
 }
 
 globalThis.runmd ??= {};
@@ -17,19 +19,28 @@ globalThis.runmd ??= {};
 registerHooks({
   resolve(specifier, context, nextResolve) {
     const importMap = globalThis.runmd.importMap;
-    let mappedSpecifier = importMap?.[specifier];
-    if (mappedSpecifier) {
-      mappedSpecifier = resolve(
-        dirname(fileURLToPath(context.parentURL ?? '')),
-        mappedSpecifier,
-      );
+    if (importMap) {
+      if (isImportMap(importMap)) {
+        const mappedSpecifier = importMap.imports[specifier];
+        if (mappedSpecifier) {
+          specifier = resolve(
+            dirname(fileURLToPath(context.parentURL ?? '')),
+            mappedSpecifier,
+          );
+        }
+      } else {
+        throw new Error(
+          'runmd.importMap must be an object with an "imports" property',
+        );
+      }
     }
-    return nextResolve(mappedSpecifier ?? specifier, context);
+
+    return nextResolve(specifier ?? specifier, context);
   },
 });
 
-globalThis.__runmdSetResult = function (
-  value: unknown,
+globalThis.__runmdSetResult = function <T>(
+  value: T,
   line: string,
   lineNum: number,
 ) {
@@ -42,4 +53,14 @@ globalThis.__runmdSetResult = function (
 
   // Pass result back to parent process
   process.send?.(message);
+
+  return value;
 };
+
+function isImportMap(obj: unknown): obj is ImportMap {
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+  const keys = Object.keys(obj as object);
+  return keys.length == 0 || (keys.length === 1 && keys[0] === 'imports');
+}

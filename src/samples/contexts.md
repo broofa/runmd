@@ -1,5 +1,5 @@
 ```javascript --run
-runmd.importMap = { foobar: './foo.ts' }; // `runmd.*` (setup block) should reset context
+runmd.importMap = { imports: { foobar: './foo.ts' } }; // `runmd.*` (setup block) should reset context
 ```
 
 ```javascript --run
@@ -21,7 +21,7 @@ typeof bar; // RESULT
 ```
 
 ```javascript --hide
-runmd.importMap = { foobar: './foo.ts' }; // `runmd.*` (setup block) should reset context
+runmd.importMap = { imports: { foobar: './foo.ts' } }; // `runmd.*` (setup block) should reset context
 ```
 
 ```javascript --run

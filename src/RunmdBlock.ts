@@ -1,7 +1,8 @@
 import { Command } from 'commander';
 import { RESULT_RE, RunmdResultLine } from './RunmdResultLine.ts';
 
-const START_LINE_REGEX = /^\s*```\s*javascript\s+(--.*)?/i;
+const BLOCK_START_REGEX = /^```\s*javascript\s+(--.*)?/i;
+const BLOCK_END_REGEX = /^```/;
 const DEFAULT_CONTEXT = 'main';
 
 export function isRunmdBlock(part: unknown): part is RunmdBlock {
@@ -13,20 +14,20 @@ export class RunmdBlock {
   nextResultLineId = 0;
   lines: (string | RunmdResultLine)[] = [];
   args: {
-    run: string;
-    debug: boolean;
+    run?: string;
+    debug?: boolean;
     hide?: boolean;
   };
 
   static fromStartLine(line: string, lineNum: number) {
-    if (START_LINE_REGEX.test(line)) {
+    if (BLOCK_START_REGEX.test(line)) {
       return new RunmdBlock(line, lineNum);
     }
   }
 
   constructor(startLine: string, lineNum: number) {
     this.lineNum = lineNum;
-    const match = startLine.match(START_LINE_REGEX);
+    const match = startLine.match(BLOCK_START_REGEX);
     if (!match || !match[1]) {
       throw new Error(`Invalid start line: ${startLine}`);
     }
@@ -59,7 +60,7 @@ export class RunmdBlock {
   }
 
   includeLine(line: string): boolean {
-    if (/^```/.test(line)) {
+    if (BLOCK_END_REGEX.test(line)) {
       return false;
     }
 

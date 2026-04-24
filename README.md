@@ -2,20 +2,16 @@
   -- This file is auto-generated from README_js.md. Changes should be made there.
   -->
 
-# ![RunMD Logo](http://i.imgur.com/cJKo6bU.png) ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
+# RunMD ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
 
-Run code blocks in your markdown and annotate them with the output.
+Run and annotate JS or TS code blocks in MarkDown files!
 
-Creating README files is a pain, especially when it comes to writing code
-samples. Code gets out of date, authors get sloppy, details get omitted, etc.
-RunMD takes the pain out of this process.
+Creating README files is a pain, especially when it comes to code samples. Code
+changes, the samples get out of date, details get omitted, and the output the code is supposed to produce ends up being... diggerent.
 
-With RunMD, your readers can trust your code blocks are runnable and that code
-output will be as-claimed.
+RunMD to the rescue! Adding RunMD to your toolchain insures the code samples in your Markdown files are runnable, complete, and accurate.
 
-[!IMPORTANT] `runmd@2` is a complete rework of this project. Markdown files built for prior versions will not work.
-
-[!NOTE] `runmd@2` does not support CJS, and requires `node@24` or higher.
+[!Note] `runmd@2` is a complete rework of this project designed to work with ESM. CJS is no longer supported, node@24 is now required, and Markdown files built for prior versions will not work.
 
 ## Install
 
@@ -23,50 +19,116 @@ output will be as-claimed.
 npm install runmd
 ```
 
+## Quick Start
+
+To make an existing README.md file RunMD-compatible:
+
+1. Make a copy of your README. E.g. `cp README.md README_js.md`
+2. Edit README_js.md and add a `--run` flag to any ` ```javascript` block you'd like evaluated
+3. Add `// RESULT` comments to show the runtime value of an expression.
+4. Run it with `runmd README_js.md --output README.md`
+
 ## Usage
 
-`runmd [options] input_file`
+```shell
+$ runmd --help
+Usage: runmd [options] <input_file>
 
-Where `options` may be zero or more of:
+Arguments:
+  input_file           markdown file to process
 
-- `--output=output_file` file to write specify an output file
-- `--watch` Watch `input_file` for changes and rerender
-- `--lame` Suppress attribution footer
-
-For example, to port an existing README.md file:
-
-    cp README.md README_js.md
-
-Edit README_js.md to add Markdown Options (below) to your ````javascript`
-blocks, then ...
-
-    runmd README_js.md --output README.md
-
-## Limitations
-
-RunMD scripts are run using [Node.js' `vm` module](https://nodejs.org/api/vm.html).
-This environment is limited in "interesting" ways, and RunMD runs fast and loose with some APIs. Specifically:
-
-- `console.log()` works, but no other `console` methods are supported at this
-  time
-- `setTimeout()` works, but all timers fire immediately at the end of script
-  execution. `clearTimeout`, `setInterval`, and `clearInterval` are not
-  supported
-
-## NPM Integration
-
-To avoid publishing when compilation of your README file fails:
-
-    "scripts": {
-      "prepare": "runmd README_js.md --output README.md"
-    }
+Options:
+  -o, --output <file>  output file
+  --no-footer          remove RunMD footer
+  -w, --watch          watch for changes
+  -h, --help           display help for command
+```
 
 ## Markdown API
 
-### --run
+### `--run` block option
 
-Runs the script, appending any console.log output. E.g.:
+Add `--run` to a ` ```javascript` block to run it through `runmd`. E.g.:
+
+    ```javascript --run
+    `Hello, ${'Fred Smith'}!`; // RESULT
+    ```
+
+... becomes:
+
+    ```javascript --run
+    `Hello, ${'Fred Smith'}!`; // ⇨ 'Fred Smith!'
+    ```
+
+`--run` may be omitted if other options are present.
+
+### `// RESULT` comments
+
+As shown above, `// RESULT` comments get replaced with the value of the expression immediately to their left.
+
+> [!IMPORTANT]
+>
+> This only works for one-line expressions. Trying to do this for multi-line
+> expressions will break runmd in unexpected ways.
+
+For example:
+
+    ```javascript --run
+    const a = 'Hello'; // RESULT
+    a + ', world!'; // RESULT
+    ```
+
+... becomes:
+
+    ```javascript
+    const a = "Hello"; // ⇨ 'Hello'
+    a + ", world!"; // ⇨ 'Hello, world!'
+    ```
+
+## Types of blocks
+
+`runmd` distinguishes between `--run`'able blocks as follows:
+
+- "Setup block" - A block that references the `runmd` global
+- "Module block" - A block that uses ESM `import` or `export` directives
+- "Simple block" - Any other block
+
+(Note that a Setup block can also be a Module block)
+
+### Context sharing
+
+Blocks can and do share the same runtime context, depending on their type and order. Simple blocks that follow one another (standard markdown is allowed in between) will all run in the same context. For example:
+
+    ```javascript --run
+    const a = 'Hello';
+    ```
+
+    ```javascript --run
+    a + ', world!'; // `a` is available from the previous block
+    ```
+
+### Context boundaries
+
+A new context is created any time a Setup block is encountered.
+
+A new context is also created any time a Module block is encountered. In this case, the most recently seen setup block will be run before the Module block or any subsequent Simple blocks.
+
+### `runmd.importMap`
+
+`runmd` has basic support for [import maps](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap) in the form of `runmd.importMap.imports`. For example:
+
+    ```javascript --run
+    runmd.importMap = {
+      imports: {
+        'foo': './src/foo.ts'
+      }
+    }
+    ```
+
+    ```javascript --run
+    import foo from 'foo';  // Imports './src/foo.ts'
+    ```
 
 ---
 
-Generated from [README_js.md](README_js.md) by [RunMD](https://github.com/broofa/runmd)
+Generated from [README_js.md](README_js.md) by [`runmd`](https://github.com/broofa/runmd)

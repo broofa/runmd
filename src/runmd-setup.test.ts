@@ -18,7 +18,9 @@ test('runmd.importMap remaps module specifiers', async () => {
   await writeFile(
     entryPath,
     `
-      globalThis.runmd.importMap = { alias: './mapped.mjs' };
+      globalThis.runmd.importMap ={
+        imports: { alias: './mapped.mjs' }
+      };
       const mod = await import('alias');
       process.stdout.write(String(mod.answer));
     `,
