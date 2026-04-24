@@ -5,10 +5,10 @@
     "email": "robert@broofa.com"
   },
   "version": "1.4.1",
+  "type": "module",
   "bin": {
-    "runmd": "./cli.js"
+    "runmd": "./src/cli.ts"
   },
-  "main": "./index.js",
   "description": "Runnable README files",
   "keywords": [
     "markdown",
@@ -16,11 +16,6 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/broofa/runmd",
-  "ava": {
-    "files": [
-      "test/*.spec.js"
-    ]
-  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
@@ -31,28 +26,34 @@
     "url": "https://github.com/broofa/runmd.git"
   },
   "dependencies": {
-    "minimist": "1.2.8",
-    "require-like": "0.1.2"
+    "commander": "14.0.3"
   },
   "peerDependencies": {
-    "prettier": "^3.4.2"
+    "prettier": "^3"
+  },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "19.6.0",
-    "ava": "6.2.0",
-    "commitlint": "19.6.1",
+    "@commitlint/config-conventional": "20.5.0",
+    "@types/node": "25.6.0",
+    "biome": "0.3.3",
+    "commitlint": "20.5.0",
     "husky": "9.1.7",
-    "prettier": "3.4.2",
-    "npm-run-all": "4.1.5"
+    "npm-run-all": "4.1.5",
+    "prettier": "3.8.3",
+    "typescript": "6.0.3"
   },
   "scripts": {
     "prepare": "husky",
-    "docs": "./cli.js --output README.md src/README_js.md",
+    "docs": "./src/cli.ts README_js.md --output README.md",
     "docs:test": "npm run docs && git diff --quiet README.md",
-    "lint:fix": "prettier --write .",
-    "lint:test": "prettier --check .",
+    "lint:fix": "biome check --write .",
+    "lint:test": "biome check .",
     "release": "echo \"This project uses release-please for releases\"",
-    "test:unit": "ava",
+    "test:unit": "node --test src/**/*.test.js src/**/*.test.ts",
     "test": "npm run docs:test && npm run lint:test && npm run test:unit"
   }
 }

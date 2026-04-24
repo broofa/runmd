@@ -1,6 +1,6 @@
-<!--
-  -- This file is auto-generated from README_js.md. Changes should be made there.
-  -->
+```javascript --run
+runmd.importMap = {};
+```
 
 # RunMD ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
 
@@ -128,7 +128,3 @@ A new context is also created any time a Module block is encountered. In this ca
     ```javascript --run
     import foo from 'foo';  // Imports './src/foo.ts'
     ```
-
----
-
-Generated from [README_js.md](README_js.md) by [`runmd`](https://github.com/broofa/runmd)
