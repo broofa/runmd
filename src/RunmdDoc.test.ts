@@ -10,18 +10,18 @@ const TESTS: {
   {
     file: 'src/samples/basic.md',
     partCount: 4,
-    blockCount: 1,
+    blockCount: 1
   },
   {
     file: 'src/samples/contexts.md',
     partCount: 12,
-    blockCount: 6,
+    blockCount: 6
   },
   {
     file: 'src/samples/module.md',
     partCount: 4,
-    blockCount: 2,
-  },
+    blockCount: 2
+  }
 ];
 
 describe('RunmdDoc.fromFile', () => {
@@ -40,15 +40,15 @@ describe('RunmdDoc.fromFile', () => {
     await assert.rejects(
       () => RunmdDoc.fromFile('src/samples/does-not-exist.md'),
       {
-        code: 'ENOENT',
-      },
+        code: 'ENOENT'
+      }
     );
   });
 
   test('throws on runtime error', async () => {
     const doc = await RunmdDoc.fromContent(
       'broken.md',
-      "```javascript --run\nthrow new Error('Dooh!');\n```",
+      "```javascript --run\nthrow new Error('Dooh!');\n```"
     );
 
     await assert.rejects(() => doc.render());

@@ -1,9 +1,9 @@
 #!/usr/bin/env -S node --no-warnings
 
-import { Command } from 'commander';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { Command } from 'commander';
 
 import RunmdDoc from './RunmdDoc.ts';
 
@@ -73,7 +73,7 @@ async function run(curr?: fs.Stats, prev?: fs.Stats) {
 
       if (watch) {
         console.log(
-          `Rendered ${outputName} at ${new Date().toLocaleTimeString()}`,
+          `Rendered ${outputName} at ${new Date().toLocaleTimeString()}`
         );
       }
     } else {
@@ -93,10 +93,10 @@ if (watch) fs.watchFile(inputPath, run);
 async function formatWithPrettier(
   markdown: string,
   inputFile: string,
-  outputFile?: string,
+  outputFile?: string
 ) {
   const requireFromInput = createRequire(
-    path.join(path.dirname(inputFile), '_'),
+    path.join(path.dirname(inputFile), '_')
   );
 
   let prettier: typeof import('prettier') | undefined;
@@ -108,7 +108,7 @@ async function formatWithPrettier(
       (prettierModule as typeof import('prettier'));
   } catch (err) {
     console.log(
-      `Prettier not found (${(err as Error).message}), skipping formatting`,
+      `Prettier not found (${(err as Error).message}), skipping formatting`
     );
     return markdown;
   }
@@ -120,7 +120,7 @@ async function formatWithPrettier(
 
     return await prettier.format(markdown, {
       ...options,
-      filepath,
+      filepath
     });
   } catch (err) {
     console.error(`Error formatting with Prettier: ${(err as Error).message}`);

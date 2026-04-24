@@ -2,7 +2,7 @@ import { registerHooks } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { formatResult } from './RunmdResultLine.ts';
-import { type RunmdResultMessage } from './runner.ts';
+import type { RunmdResultMessage } from './runner.ts';
 
 type ImportMap = {
   imports: Record<string, string>;
@@ -25,30 +25,26 @@ registerHooks({
         if (mappedSpecifier) {
           specifier = resolve(
             dirname(fileURLToPath(context.parentURL ?? '')),
-            mappedSpecifier,
+            mappedSpecifier
           );
         }
       } else {
         throw new Error(
-          'runmd.importMap must be an object with an "imports" property',
+          'runmd.importMap must be an object with an "imports" property'
         );
       }
     }
 
     return nextResolve(specifier ?? specifier, context);
-  },
+  }
 });
 
-globalThis.__runmdSetResult = function <T>(
-  value: T,
-  line: string,
-  lineNum: number,
-) {
+globalThis.__runmdSetResult = <T>(value: T, line: string, lineNum: number) => {
   const result = formatResult(value, line, lineNum);
   const message: RunmdResultMessage = {
     from: 'runmd',
     lineNum,
-    result,
+    result
   };
 
   // Pass result back to parent process

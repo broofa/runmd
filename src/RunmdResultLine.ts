@@ -60,7 +60,7 @@ export function formatResult(val: unknown, line: string, lineNum: number) {
   // "(      spaces      ) // ..."
   let result = util.inspect(val, {
     depth: null,
-    breakLength: Math.max(40, MAX_LEN - indent.length),
+    breakLength: Math.max(40, MAX_LEN - indent.length)
   });
 
   // Format 2:
@@ -72,14 +72,14 @@ export function formatResult(val: unknown, line: string, lineNum: number) {
     indent = line.replace(/\S.*/, '').replaceAll(/./g, ' ');
     result = util.inspect(val, {
       depth: null,
-      breakLength: MAX_LEN - indent.length,
+      breakLength: MAX_LEN - indent.length
     });
     lines = result.split('\n');
     lines.unshift('');
   }
 
   lines = lines.map((line, i) =>
-    i === 0 ? `// \u21e8 ${line}` : `${indent}// ${line}`,
+    i === 0 ? `// \u21e8 ${line}` : `${indent}// ${line}`
   );
 
   return lines.join('\n');

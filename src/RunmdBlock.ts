@@ -48,7 +48,7 @@ export class RunmdBlock {
       let { message } = err as Error;
       message = message.replace(/error:\s+/i, '');
       const error = /*foo*/ new Error(
-        `Line ${lineNum}: ${message}\n  "${startLine}"\n`,
+        `Line ${lineNum}: ${message}\n  "${startLine}"\n`
       );
       throw error;
     }
@@ -67,7 +67,7 @@ export class RunmdBlock {
     if (RESULT_RE.test(line)) {
       const resultLine = new RunmdResultLine(
         line,
-        this.lineNum + this.lines.length,
+        this.lineNum + this.lines.length
       );
       this.lines.push(resultLine);
       this.nextResultLineId += 1;

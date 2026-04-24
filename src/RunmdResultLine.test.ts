@@ -8,7 +8,7 @@ describe('RunmdResultLine', () => {
 
     assert.equal(
       line.toScript(),
-      "__runmdSetResult(1 + 2, '  1 + 2; // RESULT', 1)",
+      "__runmdSetResult(1 + 2, '  1 + 2; // RESULT', 1)"
     );
   });
 
@@ -17,7 +17,7 @@ describe('RunmdResultLine', () => {
 
     assert.equal(
       line.toScript(),
-      "const total = __runmdSetResult(1 + 2, 'const total = 1 + 2; // RESULT', 1)",
+      "const total = __runmdSetResult(1 + 2, 'const total = 1 + 2; // RESULT', 1)"
     );
   });
 
@@ -36,11 +36,11 @@ describe('RunmdResultLine', () => {
       formatResult(
         Array.from({ length: 20 }, (_, index) => ({
           index,
-          value: 'x'.repeat(20),
+          value: 'x'.repeat(20)
         })),
         line.line,
-        line.lineNum,
-      ),
+        line.lineNum
+      )
     );
 
     assert.match(line.toString(), /^items; \/\/ ⇨ \n\/\/ \[/);
@@ -52,12 +52,12 @@ describe('RunmdResultLine', () => {
     const result = formatResult(
       Uint8Array.from([
         110, 192, 189, 127, 17, 192, 67, 218, 151, 94, 42, 138, 217, 235, 174,
-        11,
+        11
       ]),
       line.line,
-      line.lineNum,
+      line.lineNum
     );
 
-    assert.match(result, /^\/\/ ⇨ \n  \/\/ Uint8Array/);
+    assert.match(result, /^\/\/ ⇨ \n {2}\/\/ Uint8Array/);
   });
 });
