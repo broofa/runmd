@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/broofa/runmd/compare/v1.4.1...v2.0.0) (2026-04-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Restart project w/ full ESM and TS support ([#48](https://github.com/broofa/runmd/issues/48))
+* complete rewrite for ESM
+
+### Features
+
+* complete rewrite for ESM ([2f39279](https://github.com/broofa/runmd/commit/2f3927901d0a12283f2497637439bf55311127be))
+* Restart project w/ full ESM and TS support ([#48](https://github.com/broofa/runmd/issues/48)) ([417281a](https://github.com/broofa/runmd/commit/417281a9f0f0dfac5ab95cb4ca928ab4f46166aa))
+
 ## [1.4.1](https://github.com/broofa/runmd/compare/v1.4.0...v1.4.1) (2024-12-24)
 
 
