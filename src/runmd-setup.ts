@@ -2,8 +2,9 @@ import { registerHooks } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { RunmdBlock } from './RunmdBlock.ts';
+import { formatConsoleArgs } from './RunmdConsoleLine.ts';
 import { formatResult } from './RunmdResultLine.ts';
-import type { RunmdResultMessage } from './runner.ts';
+import type { RunmdMessage } from './runner.ts';
 
 type ImportMap = {
   imports: Record<string, string>;
@@ -11,6 +12,11 @@ type ImportMap = {
 
 declare global {
   var __runmdSetResult: <T>(value: T, line: string, lineNum: number) => T;
+  var __runmdConsoleLog: (
+    lineNum: number,
+    sourceLine: string,
+    ...args: unknown[]
+  ) => void;
 
   var runmd: {
     importMap?: ImportMap;
@@ -51,17 +57,33 @@ registerHooks({
 });
 
 globalThis.__runmdSetResult = <T>(value: T, line: string, lineNum: number) => {
-  const result = formatResult(value, line);
-  const message: RunmdResultMessage = {
-    from: 'runmd',
+  const output = formatResult(value, line);
+  const message: RunmdMessage = {
+    action: 'result',
     lineNum,
-    result
+    output
   };
 
   // Pass result back to parent process
   process.send?.(message);
 
   return value;
+};
+
+globalThis.__runmdConsoleLog = (
+  lineNum: number,
+  sourceLine: string,
+  ...args: unknown[]
+) => {
+  const output = formatConsoleArgs(args, sourceLine);
+  const message: RunmdMessage = {
+    action: 'console',
+    lineNum,
+    output
+  };
+
+  // Pass console output back to parent process
+  process.send?.(message);
 };
 
 function isImportMap(obj: unknown): obj is ImportMap {
