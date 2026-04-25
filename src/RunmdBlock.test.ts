@@ -19,6 +19,27 @@ describe('RunmdBlock.fromStartLine', () => {
       expectedArgs: {
         run: 'main'
       }
+    },
+    {
+      name: 'accepts js shorthand fences',
+      startLine: '```js --run',
+      expectedArgs: {
+        run: 'main'
+      }
+    },
+    {
+      name: 'accepts ts shorthand fences',
+      startLine: '```ts --run',
+      expectedArgs: {
+        run: 'main'
+      }
+    },
+    {
+      name: 'accepts typescript fences',
+      startLine: '```typescript --run',
+      expectedArgs: {
+        run: 'main'
+      }
     }
   ];
 
@@ -34,6 +55,20 @@ describe('RunmdBlock.fromStartLine', () => {
 
   test('returns undefined for non-runmd fences', () => {
     assert.equal(RunmdBlock.fromStartLine('```ts', 1), undefined);
+  });
+
+  test('toString preserves the original language tag', () => {
+    const jsBlock = RunmdBlock.fromStartLine('```javascript --run', 1);
+    assert.ok(jsBlock);
+    jsBlock.includeLine('const x = 1;');
+    jsBlock.includeLine('```');
+    assert.ok(jsBlock.toString().startsWith('```javascript\n'));
+
+    const tsBlock = RunmdBlock.fromStartLine('```ts --run', 1);
+    assert.ok(tsBlock);
+    tsBlock.includeLine('const x = 1;');
+    tsBlock.includeLine('```');
+    assert.ok(tsBlock.toString().startsWith('```ts\n'));
   });
 });
 

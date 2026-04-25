@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { RESULT_RE, RunmdResultLine } from './RunmdResultLine.ts';
 
-const BLOCK_START_REGEX = /^```\s*javascript\s+(--.*)?/i;
+const BLOCK_START_REGEX = /^```\s*((?:javascript|js|typescript|ts))\s+(--.*)?/i;
 const BLOCK_END_REGEX = /^```/;
 const DEFAULT_CONTEXT = 'main';
 
@@ -11,6 +11,7 @@ export function isRunmdBlock(part: unknown): part is RunmdBlock {
 
 export class RunmdBlock {
   lineNum: number;
+  lang: string;
   nextResultLineId = 0;
   lines: (string | RunmdResultLine)[] = [];
   args: {
@@ -28,11 +29,13 @@ export class RunmdBlock {
   constructor(startLine: string, lineNum: number) {
     this.lineNum = lineNum;
     const match = startLine.match(BLOCK_START_REGEX);
-    if (!match?.[1]) {
+    if (!match?.[1] || !match?.[2]) {
       throw new Error(`Invalid start line: ${startLine}`);
     }
 
-    // Parse args out of the "```javascript..." line
+    this.lang = match[1];
+
+    // Parse args out of the start line line
     const cmd = new Command();
     cmd
       // Prevent commander from exiting the process on error
@@ -43,7 +46,7 @@ export class RunmdBlock {
       .option('--hide', 'hide output')
       .option('--debug', 'enable debug mode mode (leave temp files around)');
     try {
-      cmd.parse(['', '', ...match[1].split(/\s+/).filter(Boolean)]);
+      cmd.parse(['', '', ...match[2].split(/\s+/).filter(Boolean)]);
     } catch (err) {
       let { message } = err as Error;
       message = message.replace(/error:\s+/i, '');
@@ -94,7 +97,7 @@ export class RunmdBlock {
   }
 
   toString() {
-    return ['```javascript', ...this.lines.map(String), '```'].join('\n');
+    return [`\`\`\`${this.lang}`, ...this.lines.map(String), '```'].join('\n');
   }
 
   toScript() {
