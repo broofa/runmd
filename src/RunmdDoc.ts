@@ -64,6 +64,18 @@ export default class RunmdDoc {
     return this.parts.filter(isRunmdBlock);
   }
 
+  lineAtLineNum(lineNum: number) {
+    for (const part of this.parts) {
+      if (!isRunmdBlock(part)) {
+        continue;
+      }
+      const line = part.lineAtLineNum(lineNum);
+      if (line) {
+        return line;
+      }
+    }
+  }
+
   async render() {
     await runDoc(this);
 

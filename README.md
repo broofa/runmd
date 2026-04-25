@@ -39,9 +39,9 @@ Options:
 
 ## Markdown API
 
-### `--run` block option
+### `--run` option
 
-Add `--run` to a ` ```javascript` block to run it through `runmd`. E.g.:
+Add `--run` to any JS or TS code block (` ```js`, ` ```ts`, ` ```javascript`, ` ```typescript`) to enable `runmd` processing. E.g.:
 
     ```javascript --run
     `Hello, ${'Fred Smith'}!`; // RESULT
@@ -53,16 +53,9 @@ Add `--run` to a ` ```javascript` block to run it through `runmd`. E.g.:
     `Hello, ${'Fred Smith'}!`; // ⇨ 'Fred Smith!'
     ```
 
-`--run` may be omitted if other options are present.
+### `// RESULT`
 
-### `// RESULT` comments
-
-As shown above, `// RESULT` comments get replaced with the value of the expression immediately to their left.
-
-> [!IMPORTANT]
->
-> This only works for one-line expressions. Trying to do this for multi-line
-> expressions will break runmd in unexpected ways.
+Add `// RESULT` after an expression to document it's value.
 
 For example:
 
@@ -78,29 +71,65 @@ For example:
     a + ", world!"; // ⇨ 'Hello, world!'
     ```
 
-### `console.log` statements
+> [!Note]
+>
+> The code in question must be self-contained on a single line. Multi-line
+> expressions are not supported.
 
-`runmd` captures `console.log(...)` output in runnable blocks and renders it directly below the `console.log` line.
+### `console.log`
+
+Use `console.log(...)` to document one or more runtime values.
 
 For example:
 
-```javascript --run
-const item = { id: 42, tags: ["a", "b"] };
-console.log(item);
-```
+    ```javascript --run
+    const item = { id: 42, tags: ['a', 'b'] };
+    console.log(item);
+    ```
 
 ... becomes:
 
-```javascript --run
-const item = { id: 42, tags: ["a", "b"] };
-console.log(item);
-// ⇨ { id: 42, tags: [ 'a', 'b' ] }
-```
+    ```javascript --run
+    const item = { id: 42, tags: ['a', 'b'] };
+    console.log(item);
+    // ⇨ { id: 42, tags: [ 'a', 'b' ] }
+    ```
 
-> [!IMPORTANT]
+> [!Note]
+>
+> Like `// RESULT`, `console.log()` must be self-contained on a single line.
 >
 > Other console APIs (`error()`, `warn()`, `info()`, etc.) are not supported and
 > will error.
+
+### Loops
+
+If multiple passes are made over a line with `// RESULT` or `console.log()`, all values will be shown in the order they were produced.
+
+For example:
+
+    ```javascript --run
+    for (const word of 'The quick brown fox'.split(' ')) {
+      word.toUpperCase(); //  RESULT
+      console.log(word.match(/[aeiou]/g))
+    }
+    ```
+
+... becomes:
+
+    ```javascript --run
+    for (const [_, word] in 'works for me'.split(' ')) {
+      word.toUpperCase(); // ⇨ 'THE'
+      // ⇨ 'QUICK'
+      // ⇨ 'BROWN'
+      // ⇨ 'FOX'
+      console.log(word.match(/[aeiou]/g));
+      // ⇨ [ 'e' ]
+      // ⇨ [ 'u', 'i' ]
+      // ⇨ [ 'o' ]
+      // ⇨ [ 'o' ]
+    }
+    ```
 
 ## Types of blocks
 
