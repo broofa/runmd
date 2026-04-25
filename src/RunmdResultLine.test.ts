@@ -24,7 +24,7 @@ describe('RunmdResultLine', () => {
   test('setResult renders short results inline', () => {
     const line = new RunmdResultLine('const total = 1 + 2; // RESULT', 1);
 
-    line.setResult(formatResult(3, line.line));
+    line.addValue(formatResult(3, line.line));
 
     assert.equal(line.toString(), 'const total = 1 + 2; // ⇨ 3');
   });
@@ -32,8 +32,8 @@ describe('RunmdResultLine', () => {
   test('setResult accumulates multiple results for one line', () => {
     const line = new RunmdResultLine('value; // RESULT', 1);
 
-    line.setResult(formatResult(1, line.line));
-    line.setResult(formatResult(2, line.line));
+    line.addValue(formatResult(1, line.line));
+    line.addValue(formatResult(2, line.line));
 
     assert.equal(line.toString(), 'value; // ⇨ 1\n// ⇨ 2');
   });
@@ -41,7 +41,7 @@ describe('RunmdResultLine', () => {
   test('setResult moves large results onto following lines', () => {
     const line = new RunmdResultLine('items; // RESULT', 1);
 
-    line.setResult(
+    line.addValue(
       formatResult(
         Array.from({ length: 20 }, (_, index) => ({
           index,

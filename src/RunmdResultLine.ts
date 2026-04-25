@@ -4,31 +4,18 @@ export const RESULT_RE = /\/\/\s*RESULT\s*$/;
 export const LARGE_RESULT_LINES = 5;
 
 export class RunmdResultLine {
-  static byLineNum = new Map<number, RunmdResultLine>();
-
   lineNum: number;
   line: string;
-  results: string[];
-
-  static setResultForLine(lineNum: number, result: string) {
-    const resultLine = RunmdResultLine.byLineNum.get(lineNum);
-    if (resultLine) {
-      resultLine.setResult(result);
-    } else {
-      console.warn(`No RunmdResultLine at line ${lineNum}`);
-    }
-  }
+  values: string[];
 
   constructor(line: string, lineNum: number) {
     this.lineNum = lineNum;
     this.line = line;
-    this.results = [];
-
-    RunmdResultLine.byLineNum.set(lineNum, this);
+    this.values = [];
   }
 
-  setResult(result: string) {
-    this.results.push(result);
+  addValue(result: string) {
+    this.values.push(result);
   }
 
   toScript() {
@@ -42,15 +29,16 @@ export class RunmdResultLine {
     const match = trimmed.match(/(^\s*(?:const|let|var)[\w\s,]*=\s)*(.*)/);
 
     const [, declaration, expression] = match ?? [];
-    return `${declaration ?? ''}__runmdSetResult(${expression ?? 'undefined'}, '${this.line.replaceAll(/'/g, "\\'")}', ${this.lineNum})`;
+    return `${declaration ?? ''}__runmdSetResult(${String(expression)}, '${this.line.replaceAll(/'/g, "\\'")}', ${this.lineNum})`;
   }
 
   /** Fully rendered line output */
   toString() {
-    const rendered = this.results.length > 0 ? this.results : ['undefined'];
+    const rendered = this.values.length > 0 ? this.values : ['// (undefined)'];
     return this.line.replace(RESULT_RE, rendered.join('\n'));
   }
 }
+
 export function formatResult(val: unknown, line: string) {
   const MAX_LEN = 130;
 

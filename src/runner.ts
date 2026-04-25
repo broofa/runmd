@@ -4,10 +4,8 @@ import { spawn } from 'node:child_process';
 import { unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RunmdBlock } from './RunmdBlock.ts';
-import { RunmdConsoleLine } from './RunmdConsoleLine.ts';
 import type RunmdDoc from './RunmdDoc.ts';
 import { BOOTSTRAP_IMPORT_PATH } from './RunmdDoc.ts';
-import { RunmdResultLine } from './RunmdResultLine.ts';
 
 export type RunBlocksResult = {
   scriptPath: string;
@@ -113,10 +111,21 @@ async function runBlocks(
           return;
         }
 
-        if (message.action === 'result') {
-          RunmdResultLine.setResultForLine(message.lineNum, message.output);
-        } else {
-          RunmdConsoleLine.appendOutputForLine(message.lineNum, message.output);
+        const line = doc.lineAtLineNum(message.lineNum);
+        if (!line) {
+          console.warn(
+            `Value received with unexpected line number #(${message.lineNum}) `
+          );
+          return;
+        }
+
+        switch (message.action) {
+          case 'result':
+            line.addValue(message.output);
+            break;
+          case 'console':
+            line.addValue(message.output);
+            break;
         }
       });
 
