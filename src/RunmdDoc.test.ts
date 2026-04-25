@@ -53,4 +53,46 @@ describe('RunmdDoc.fromFile', () => {
 
     await assert.rejects(() => doc.render());
   });
+
+  test('supports runmd.onOutputLine line transforms and drops', async () => {
+    const original = globalThis.runmd;
+    const seen: { line: string; inBlock: boolean }[] = [];
+
+    globalThis.runmd = {
+      ...(original ?? {}),
+      onOutputLine(line, inBlock) {
+        seen.push({ line, inBlock: Boolean(inBlock) });
+        if (line === '```javascript') return undefined;
+        if (line === '```') return undefined;
+        if (line === '# Header') return '# HEADER';
+        return line;
+      }
+    };
+
+    try {
+      const doc = RunmdDoc.fromContent(
+        'inline.md',
+        [
+          '# Header',
+          '',
+          '```javascript --run',
+          'const total = 1 + 1;',
+          '```'
+        ].join('\n')
+      );
+
+      const output = await doc.render();
+      assert.equal(output, ['# HEADER', '', 'const total = 1 + 1;'].join('\n'));
+      assert.ok(
+        seen.some((entry) => entry.line === '# Header' && !entry.inBlock)
+      );
+      assert.ok(
+        seen.some(
+          (entry) => entry.line === 'const total = 1 + 1;' && entry.inBlock
+        )
+      );
+    } finally {
+      globalThis.runmd = original;
+    }
+  });
 });

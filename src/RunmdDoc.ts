@@ -26,7 +26,7 @@ export default class RunmdDoc {
     return doc;
   }
 
-  sourcePath?: string;
+  sourcePath: string;
   parts: (string | RunmdBlock)[];
 
   constructor(sourcePath: string, content: string) {
@@ -64,6 +64,18 @@ export default class RunmdDoc {
     return this.parts.filter(isRunmdBlock);
   }
 
+  lineAtLineNum(lineNum: number) {
+    for (const part of this.parts) {
+      if (!isRunmdBlock(part)) {
+        continue;
+      }
+      const line = part.lineAtLineNum(lineNum);
+      if (line) {
+        return line;
+      }
+    }
+  }
+
   async render() {
     await runDoc(this);
 
@@ -71,6 +83,24 @@ export default class RunmdDoc {
       (part) => !(isRunmdBlock(part) && (part.isSetup() || part.isHidden()))
     );
 
-    return parts.map(String).join('\n');
+    const onOutputLine = globalThis.runmd?.onOutputLine;
+    if (!onOutputLine) {
+      return parts.map(String).join('\n');
+    }
+
+    const outputLines: string[] = [];
+    for (const part of parts) {
+      const inBlock = isRunmdBlock(part) ? part : undefined;
+      const lines = String(part).split('\n');
+
+      for (const line of lines) {
+        const nextLine = onOutputLine(line, inBlock);
+        if (nextLine !== undefined) {
+          outputLines.push(String(nextLine));
+        }
+      }
+    }
+
+    return outputLines.join('\n');
   }
 }

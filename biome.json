@@ -2,7 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!CHANGELOG.md"]
+    "includes": ["**", "!CHANGELOG.md", "!_runmd*"]
   },
   "formatter": {
     "enabled": true,

@@ -1,12 +1,11 @@
 // Logic for running script blocks in a runmd document
 
 import { spawn } from 'node:child_process';
-import { unlink, writeFile } from 'node:fs/promises';
+import { readdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RunmdBlock } from './RunmdBlock.ts';
 import type RunmdDoc from './RunmdDoc.ts';
 import { BOOTSTRAP_IMPORT_PATH } from './RunmdDoc.ts';
-import { RunmdResultLine } from './RunmdResultLine.ts';
 
 export type RunBlocksResult = {
   scriptPath: string;
@@ -14,14 +13,18 @@ export type RunBlocksResult = {
   signal: NodeJS.Signals | null;
 };
 
-export type RunmdResultMessage = {
-  from: 'runmd';
+export type RunmdMessage = {
+  action: 'result' | 'console';
   lineNum: number;
-  result: string;
+  output: string;
 };
 
-function isRunmdMessage(obj: unknown): obj is RunmdResultMessage {
-  return (obj as RunmdResultMessage)?.from === 'runmd';
+function isRunmdMessage(obj: unknown): obj is RunmdMessage {
+  const message = obj as RunmdMessage;
+  return (
+    message?.action !== undefined &&
+    ['result', 'console'].includes(message.action)
+  );
 }
 
 export async function runDoc(doc: RunmdDoc) {
@@ -32,7 +35,7 @@ export async function runDoc(doc: RunmdDoc) {
   blocks.push(undefined); // Sentinel to flush out last job blocks
 
   for (const block of blocks) {
-    // Run blocks if we this is a module block, a setup block, or the end of the doc
+    // Run blocks if this is a module block, a setup block, or the end of the doc
     if (!block || block.isSetup() || block?.isModule()) {
       if (jobBlocks.length > 0) {
         await runBlocks(doc, setupBlock, jobBlocks);
@@ -72,27 +75,29 @@ async function runBlocks(
     ].join('\n');
   }
 
-  const sourcePath = doc.sourcePath
-    ? path.resolve(process.cwd(), doc.sourcePath)
-    : path.resolve(process.cwd(), 'stdin.md');
+  const sourcePath = path.resolve(process.cwd(), doc.sourcePath);
   const sourceDir = path.dirname(sourcePath);
-  const pathBase = path.join(
+  const namePrefix = `_runmd-${path.basename(sourcePath)}`;
+  const setupScriptPath = path.join(
     sourceDir,
-    `_runmd-${path.basename(sourcePath)}-${firstBlock.lineNum}`
+    `${namePrefix}-${firstBlock.lineNum}-setup.ts`
   );
 
-  let setupScriptPath: string | undefined;
+  // Cleanup old scripts from prior runs
+  await cleanup(sourceDir, namePrefix);
+
   if (setupBlock) {
-    setupScriptPath = `${pathBase}-setup.ts`;
     await writeFile(setupScriptPath, `${setupBlock.toScript()}\n`, 'utf8');
   }
-  const scriptPath = `${pathBase}.ts`;
+  const scriptPath = path.join(
+    sourceDir,
+    `${namePrefix}-${firstBlock.lineNum}.ts`
+  );
   await writeFile(scriptPath, `${script}\n`, 'utf8');
-
   try {
     return await new Promise<RunBlocksResult>((resolve, reject) => {
       const nodeArgs = ['--no-warnings', '--import', BOOTSTRAP_IMPORT_PATH];
-      if (setupScriptPath) {
+      if (setupBlock) {
         nodeArgs.push('--import', setupScriptPath);
       }
       nodeArgs.push(scriptPath);
@@ -111,7 +116,22 @@ async function runBlocks(
           return;
         }
 
-        RunmdResultLine.setResultForLine(message.lineNum, message.result);
+        const line = doc.lineAtLineNum(message.lineNum);
+        if (!line) {
+          console.warn(
+            `Value received with unexpected line number #(${message.lineNum}) `
+          );
+          return;
+        }
+
+        switch (message.action) {
+          case 'result':
+            line.addValue(message.output);
+            break;
+          case 'console':
+            line.addValue(message.output);
+            break;
+        }
       });
 
       child.on('close', (exitCode, signal) => {
@@ -128,10 +148,16 @@ async function runBlocks(
     });
   } finally {
     if (!setupBlock?.args.debug) {
-      await unlink(scriptPath).catch(() => undefined);
-      if (setupScriptPath) {
-        await unlink(setupScriptPath).catch(() => undefined);
-      }
+      await cleanup(sourceDir, namePrefix);
     }
   }
+}
+
+async function cleanup(sourceDir: string, namePrefix: string) {
+  const existing = await readdir(sourceDir).catch(() => [] as string[]);
+  await Promise.all(
+    existing
+      .filter((f) => f.startsWith(namePrefix) && f.endsWith('.ts'))
+      .map((f) => unlink(path.join(sourceDir, f)).catch(() => undefined))
+  );
 }

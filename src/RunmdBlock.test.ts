@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { RunmdBlock } from './RunmdBlock.ts';
-import { RunmdResultLine } from './RunmdResultLine.ts';
+import { RunmdConsoleLine } from './RunmdConsoleLine.ts';
 
 describe('RunmdBlock.fromStartLine', () => {
   const TESTS = [
@@ -16,6 +16,27 @@ describe('RunmdBlock.fromStartLine', () => {
     {
       name: 'accepts uppercase javascript fences',
       startLine: '```JavaScript --run',
+      expectedArgs: {
+        run: 'main'
+      }
+    },
+    {
+      name: 'accepts js shorthand fences',
+      startLine: '```js --run',
+      expectedArgs: {
+        run: 'main'
+      }
+    },
+    {
+      name: 'accepts ts shorthand fences',
+      startLine: '```ts --run',
+      expectedArgs: {
+        run: 'main'
+      }
+    },
+    {
+      name: 'accepts typescript fences',
+      startLine: '```typescript --run',
       expectedArgs: {
         run: 'main'
       }
@@ -35,6 +56,20 @@ describe('RunmdBlock.fromStartLine', () => {
   test('returns undefined for non-runmd fences', () => {
     assert.equal(RunmdBlock.fromStartLine('```ts', 1), undefined);
   });
+
+  test('toString preserves the original language tag', () => {
+    // biome-ignore lint/style/noNonNullAssertion: because
+    const jsBlock = RunmdBlock.fromStartLine('```javascript --run', 1)!;
+    jsBlock.includeLine('const x = 1;');
+    jsBlock.includeLine('```');
+    assert.ok(jsBlock.toString().startsWith('```javascript\n'));
+
+    const tsBlock = RunmdBlock.fromStartLine('```ts --run', 1);
+    assert.ok(tsBlock);
+    tsBlock.includeLine('const x = 1;');
+    tsBlock.includeLine('```');
+    assert.ok(tsBlock.toString().startsWith('```ts\n'));
+  });
 });
 
 describe('RunmdBlock.includeLine', () => {
@@ -43,17 +78,14 @@ describe('RunmdBlock.includeLine', () => {
       name: 'keeps plain lines and converts result lines',
       startLine: '```javascript --run',
       script: ['const total = 1 + 2;', 'total; // RESULT', '```'].join('\n'),
-      expectedNextResultLineId: 1,
       expectedLines: [
         {
-          type: 'string',
-          value: 'const total = 1 + 2;'
+          asString: 'const total = 1 + 2;',
+          asScript: undefined
         },
         {
-          type: 'result',
-          id: 2,
-          source: 'total; // RESULT',
-          script: "__runmdSetResult(total, 'total; // RESULT', 2)"
+          asString: 'total; // (undefined)',
+          asScript: "__runmdSetResult(total, 'total; // RESULT', 2)"
         }
       ]
     },
@@ -66,64 +98,98 @@ describe('RunmdBlock.includeLine', () => {
         'console.log(second);',
         '```'
       ].join('\n'),
-      expectedNextResultLineId: 2,
       expectedLines: [
         {
-          type: 'result',
-          id: 1,
-          source: 'const first = 1; // RESULT',
-          script:
+          asString: 'const first = 1; // (undefined)',
+          asScript:
             "const first = __runmdSetResult(1, 'const first = 1; // RESULT', 1)"
         },
         {
-          type: 'result',
-          id: 2,
-          source: 'const second = 2; // RESULT',
-          script:
+          asString: 'const second = 2; // (undefined)',
+          asScript:
             "const second = __runmdSetResult(2, 'const second = 2; // RESULT', 2)"
         },
         {
-          type: 'string',
-          value: 'console.log(second);'
+          asString: 'console.log(second);',
+          asScript: '__runmdConsoleLog(3, "console.log(second);", second);'
         }
       ]
     }
   ];
 
-  for (const {
-    name,
-    startLine,
-    script,
-    expectedNextResultLineId,
-    expectedLines
-  } of TESTS) {
+  for (const { name, startLine, script, expectedLines } of TESTS) {
     test(name, () => {
       const block = new RunmdBlock(startLine, 1);
       const includeResults = script
         .split('\n')
         .map((line) => block.includeLine(line));
 
+      const scriptLines = script.split('\n');
       assert.deepEqual(includeResults, [
-        true,
-        ...Array(expectedLines.length - 1).fill(true),
+        ...Array(scriptLines.length - 1).fill(true),
         false
       ]);
-      assert.equal(block.nextResultLineId, expectedNextResultLineId);
       assert.equal(block.lines.length, expectedLines.length);
 
       for (const [index, expectedLine] of expectedLines.entries()) {
         const actualLine = block.lines[index];
-
-        if (expectedLine.type === 'string') {
-          assert.equal(actualLine, expectedLine.value);
+        const actualString = String(actualLine);
+        if (!actualLine || typeof actualLine === 'string') {
           continue;
         }
+        const actualScript = actualLine.toScript?.();
 
-        assert.ok(actualLine instanceof RunmdResultLine);
-        assert.equal(actualLine.lineNum, expectedLine.id);
-        assert.equal(actualLine.line, expectedLine.source);
-        assert.equal(actualLine.toScript(), expectedLine.script);
+        assert.equal(actualString, expectedLine.asString);
+        assert.equal(actualScript, expectedLine.asScript);
       }
     });
   }
+});
+
+describe('RunmdBlock console.log support', () => {
+  test('includeLine inserts RunmdConsoleLine after console.log lines', () => {
+    const block = new RunmdBlock('```javascript --run', 5);
+    block.includeLine('const x = 1;');
+    block.includeLine('console.log(x);');
+    block.includeLine('```');
+
+    // lines: ['const x = 1;', RunmdConsoleLine]
+    assert.equal(block.lines.length, 2);
+    assert.equal(block.lines[0], 'const x = 1;');
+    assert.ok(block.lines[1] instanceof RunmdConsoleLine);
+    assert.equal((block.lines[1] as RunmdConsoleLine).lineNum, 6);
+  });
+
+  test('toScript replaces console.log( with __runmdConsoleLog(lineNum, sourceLine,', () => {
+    const block = new RunmdBlock('```javascript --run', 1);
+    block.includeLine('console.log(42);');
+    block.includeLine('```');
+
+    const script = block.toScript();
+    assert.ok(script.includes('__runmdConsoleLog(1, "console.log(42);", 42);'));
+  });
+
+  test(' toString omits RunmdConsoleLine slot when no output captured', () => {
+    const block = new RunmdBlock('```javascript --run', 1);
+    block.includeLine('console.log(42);');
+    block.includeLine('```');
+
+    const out = block.toString();
+    assert.ok(!out.includes('// \u21e8'));
+    assert.ok(out.includes('console.log(42);'));
+  });
+
+  test('toString inserts captured output below the console.log line', () => {
+    const block = new RunmdBlock('```javascript --run', 1);
+    block.includeLine('console.log(42);');
+    block.includeLine('```');
+
+    block.lineAtLineNum(1)?.addValue('// \u21e8 42');
+
+    const out = block.toString();
+    const lines = out.split('\n');
+    const logIdx = lines.indexOf('console.log(42);');
+    assert.ok(logIdx >= 0, 'console.log line should be in output');
+    assert.equal(lines[logIdx + 1], '// \u21e8 42');
+  });
 });
