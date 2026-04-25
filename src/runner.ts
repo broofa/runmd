@@ -72,9 +72,7 @@ async function runBlocks(
     ].join('\n');
   }
 
-  const sourcePath = doc.sourcePath
-    ? path.resolve(process.cwd(), doc.sourcePath)
-    : path.resolve(process.cwd(), 'stdin.md');
+  const sourcePath = path.resolve(process.cwd(), doc.sourcePath);
   const sourceDir = path.dirname(sourcePath);
   const pathBase = path.join(
     sourceDir,

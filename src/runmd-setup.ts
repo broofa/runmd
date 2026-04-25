@@ -1,6 +1,7 @@
 import { registerHooks } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { RunmdBlock } from './RunmdBlock.ts';
 import { formatResult } from './RunmdResultLine.ts';
 import type { RunmdResultMessage } from './runner.ts';
 
@@ -11,7 +12,17 @@ type ImportMap = {
 declare global {
   var __runmdSetResult: <T>(value: T, line: string, lineNum: number) => T;
 
-  var runmd: { importMap?: ImportMap };
+  var runmd: {
+    importMap?: ImportMap;
+
+    onOutputLine?: (
+      line: string,
+      inBlock: RunmdBlock | undefined
+    ) => string | undefined;
+
+    /** @deprecated use importMap instead */
+    onRequire?: never;
+  };
 }
 
 globalThis.runmd ??= {};
