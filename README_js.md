@@ -1,17 +1,12 @@
-```javascript --run
-runmd.importMap = {};
+```javascript --run --debug
+runmd.importMap = {imports: {}};
 ```
 
 # RunMD ![example workflow](https://github.com/broofa/runmd/actions/workflows/ci.yml/badge.svg)
 
 Run and annotate JS or TS code blocks in MarkDown files!
 
-Creating README files is a pain, especially when it comes to code samples. Code
-changes, the samples get out of date, details get omitted, and the output the code is supposed to produce ends up being... diggerent.
-
-RunMD to the rescue! Adding RunMD to your toolchain insures the code samples in your Markdown files are runnable, complete, and accurate.
-
-[!Note] `runmd@2` is a complete rework of this project designed to work with ESM. CJS is no longer supported, node@24 is now required, and Markdown files built for prior versions will not work.
+[!Note] `runmd@2` is a complete rework of this project designed to work with ESM. CJS is no longer supported, node>=22 is now required, and Markdown files built for prior versions will not work.
 
 ## Install
 
@@ -21,10 +16,8 @@ npm install runmd
 
 ## Quick Start
 
-To make an existing README.md file RunMD-compatible:
-
-1. Make a copy of your README. E.g. `cp README.md README_js.md`
-2. Edit README_js.md and add a `--run` flag to any ` ```javascript` block you'd like evaluated
+1. Make a copy of your existing README. E.g. `cp README.md README_js.md`
+2. Edit `README_js.md` to `--run` flag to ` ```javascript` blocks you'd like processed
 3. Add `// RESULT` comments to show the runtime value of an expression.
 4. Run it with `runmd README_js.md --output README.md`
 
@@ -85,33 +78,83 @@ For example:
     a + ", world!"; // ⇨ 'Hello, world!'
     ```
 
+### `console.log` statements
+
+`runmd` captures `console.log(...)` output in runnable blocks and renders it directly below the `console.log` line.
+
+For example:
+
+  ```javascript --run
+  const item = { id: 42, tags: ['a', 'b'] };
+  console.log(item);
+  ```
+
+... becomes:
+
+  ```javascript --run
+  const item = { id: 42, tags: ['a', 'b'] };
+  console.log(item);
+  // ⇨ { id: 42, tags: [ 'a', 'b' ] }
+  ```
+
+> [!IMPORTANT]
+>
+> Other console APIs (`error()`, `warn()`, `info()`, etc.) are not supported and
+> will  error.
+
 ## Types of blocks
 
 `runmd` distinguishes between `--run`'able blocks as follows:
 
-- "Setup block" - A block that references the `runmd` global
-- "Module block" - A block that uses ESM `import` or `export` directives
-- "Simple block" - Any other block
+- **Setup block** - A block that references the `runmd` global
+- **Module block** - A block that uses ESM `import` or `export` directives
+- **Simple block** - Any other block
 
-(Note that a Setup block can also be a Module block)
+(Note that a **Setup block** can also be a **Module block**)
 
-### Context sharing
+### Simple block context sharing
 
-Blocks can and do share the same runtime context, depending on their type and order. Simple blocks that follow one another (standard markdown is allowed in between) will all run in the same context. For example:
+**Simple blocks** run in the same context as any preceding block. For example:
 
     ```javascript --run
-    const a = 'Hello';
+    const foo = 'Hello';
     ```
 
     ```javascript --run
-    a + ', world!'; // `a` is available from the previous block
+    foo + ', world!'; // `foo` is [still] defined
     ```
 
-### Context boundaries
+### Module block context sharing
 
-A new context is created any time a Setup block is encountered.
+The context resets when a **Setup block** is encountered.  The **Setup block** is run as part of setting up the new context.
 
-A new context is also created any time a Module block is encountered. In this case, the most recently seen setup block will be run before the Module block or any subsequent Simple blocks.
+The context also resets when a **Module block** is encountered.  `runmd` will run the most recently encountered **Setup block**, then run the **Module block**.  For example:
+
+```javascript --run
+// "runmd" here makes this a Setup block (context resets)
+runmd.importMap = {imports: {}};
+```
+
+```javascript --run
+globalThis['run'+'md']; // RESULT
+const foo = 123;
+// Simple block - we have access to previous block state
+foo + 321; // RESULT
+```
+
+```javascript --run
+runmd
+```
+
+
+```javascript --run
+import 'node:path';  // "import" here makes this a Module block
+
+```javascript --run
+export default {}; //
+
+### Setup block context sharing
+
 
 ### `runmd.importMap`
 
@@ -128,3 +171,30 @@ A new context is also created any time a Module block is encountered. In this ca
     ```javascript --run
     import foo from 'foo';  // Imports './src/foo.ts'
     ```
+
+### `runmd.onOutputLine`
+
+The `runmd.onOutputLine` callback can be used to transform the generated markdown.
+
+For example:
+
+    ```javascript --run
+    /**
+     * @param {string} line Output line text.
+     * @param {object|undefined} inBlock Current code block, if this line came from one.
+     * @returns {string|undefined} Return undefined to drop the line, or a string to keep/replace it.
+     */
+    runmd.onOutputLine = (line, inBlock) => {
+      if (line === '```javascript' || line === '```') {
+        return undefined; // Drop code fence lines
+      }
+
+      if (!inBlock && line.startsWith('# ')) {
+        return line.toUpperCase(); // Rewrite markdown headings
+      }
+
+      return line;
+    };
+    ```
+
+

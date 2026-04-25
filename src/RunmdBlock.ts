@@ -1,8 +1,10 @@
 import { Command } from 'commander';
+import { RunmdConsoleLine } from './RunmdConsoleLine.ts';
 import { RESULT_RE, RunmdResultLine } from './RunmdResultLine.ts';
 
-const BLOCK_START_REGEX = /^```\s*javascript\s+(--.*)?/i;
+const BLOCK_START_REGEX = /^```\s*((?:javascript|js|typescript|ts))\s+(--.*)?/i;
 const BLOCK_END_REGEX = /^```/;
+const CONSOLE_LOG_RE = /\bconsole\.log\(/;
 const DEFAULT_CONTEXT = 'main';
 
 export function isRunmdBlock(part: unknown): part is RunmdBlock {
@@ -11,8 +13,9 @@ export function isRunmdBlock(part: unknown): part is RunmdBlock {
 
 export class RunmdBlock {
   lineNum: number;
+  lang: string;
   nextResultLineId = 0;
-  lines: (string | RunmdResultLine)[] = [];
+  lines: (string | RunmdResultLine | RunmdConsoleLine)[] = [];
   args: {
     run?: string;
     debug?: boolean;
@@ -28,11 +31,13 @@ export class RunmdBlock {
   constructor(startLine: string, lineNum: number) {
     this.lineNum = lineNum;
     const match = startLine.match(BLOCK_START_REGEX);
-    if (!match?.[1]) {
+    if (!match?.[1] || !match?.[2]) {
       throw new Error(`Invalid start line: ${startLine}`);
     }
 
-    // Parse args out of the "```javascript..." line
+    this.lang = match[1];
+
+    // Parse args out of the start line line
     const cmd = new Command();
     cmd
       // Prevent commander from exiting the process on error
@@ -43,7 +48,7 @@ export class RunmdBlock {
       .option('--hide', 'hide output')
       .option('--debug', 'enable debug mode mode (leave temp files around)');
     try {
-      cmd.parse(['', '', ...match[1].split(/\s+/).filter(Boolean)]);
+      cmd.parse(['', '', ...match[2].split(/\s+/).filter(Boolean)]);
     } catch (err) {
       let { message } = err as Error;
       message = message.replace(/error:\s+/i, '');
@@ -73,6 +78,13 @@ export class RunmdBlock {
       this.nextResultLineId += 1;
     } else {
       this.lines.push(line);
+      if (CONSOLE_LOG_RE.test(line)) {
+        // Insert a slot to collect console output for this line
+        const consoleLine = new RunmdConsoleLine(
+          this.lineNum + this.lines.length - 1
+        );
+        this.lines.push(consoleLine);
+      }
     }
 
     return true;
@@ -94,14 +106,42 @@ export class RunmdBlock {
   }
 
   toString() {
-    return ['```javascript', ...this.lines.map(String), '```'].join('\n');
+    const outputLines: string[] = [];
+    for (const line of this.lines) {
+      if (line instanceof RunmdConsoleLine) {
+        // Only include the slot if runtime output was captured
+        if (line.outputs.length > 0) {
+          outputLines.push(String(line));
+        }
+      } else {
+        outputLines.push(String(line));
+      }
+    }
+    return [`\`\`\`${this.lang}`, ...outputLines, '```'].join('\n');
   }
 
   toScript() {
-    return this.lines
-      .map((line) => {
-        return line instanceof RunmdResultLine ? line.toScript() : line;
-      })
-      .join('\n');
+    const result: string[] = [];
+    for (const [i, line] of this.lines.entries()) {
+      if (line instanceof RunmdResultLine) {
+        result.push(line.toScript());
+      } else if (line instanceof RunmdConsoleLine) {
+        // skip — output slot only, no script
+      } else {
+        const next = this.lines[i + 1];
+        if (next instanceof RunmdConsoleLine) {
+          // Replace console.log( with __runmdConsoleLog(lineNum, sourceLine, ...
+          result.push(
+            line.replace(
+              /\bconsole\.log\(/g,
+              `__runmdConsoleLog(${next.lineNum}, ${JSON.stringify(line)}, `
+            )
+          );
+        } else {
+          result.push(line);
+        }
+      }
+    }
+    return result.join('\n');
   }
 }

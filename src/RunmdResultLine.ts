@@ -72,7 +72,8 @@ export function formatResult(val: unknown, line: string) {
     indent = line.replace(/\S.*/, '').replaceAll(/./g, ' ');
     result = util.inspect(val, {
       depth: null,
-      breakLength: MAX_LEN - indent.length
+      breakLength: MAX_LEN - indent.length,
+      compact: true
     });
     lines = result.split('\n');
     lines.unshift('');
