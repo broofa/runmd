@@ -7,13 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* Restart project w/ full ESM and TS support ([#48](https://github.com/broofa/runmd/issues/48))
-* complete rewrite for ESM
-
-### Features
-
-* complete rewrite for ESM ([2f39279](https://github.com/broofa/runmd/commit/2f3927901d0a12283f2497637439bf55311127be))
-* Restart project w/ full ESM and TS support ([#48](https://github.com/broofa/runmd/issues/48)) ([417281a](https://github.com/broofa/runmd/commit/417281a9f0f0dfac5ab95cb4ca928ab4f46166aa))
+* Restart project.  Drop CJS support.  Add ESM and TS support. ([#48](https://github.com/broofa/runmd/issues/48))
 
 ## [1.4.1](https://github.com/broofa/runmd/compare/v1.4.0...v1.4.1) (2024-12-24)
 
