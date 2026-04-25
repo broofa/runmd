@@ -29,6 +29,15 @@ describe('RunmdResultLine', () => {
     assert.equal(line.toString(), 'const total = 1 + 2; // ⇨ 3');
   });
 
+  test('setResult accumulates multiple results for one line', () => {
+    const line = new RunmdResultLine('value; // RESULT', 1);
+
+    line.setResult(formatResult(1, line.line));
+    line.setResult(formatResult(2, line.line));
+
+    assert.equal(line.toString(), 'value; // ⇨ 1\n// ⇨ 2');
+  });
+
   test('setResult moves large results onto following lines', () => {
     const line = new RunmdResultLine('items; // RESULT', 1);
 

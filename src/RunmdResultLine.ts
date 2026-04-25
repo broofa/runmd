@@ -8,7 +8,7 @@ export class RunmdResultLine {
 
   lineNum: number;
   line: string;
-  result: string;
+  results: string[];
 
   static setResultForLine(lineNum: number, result: string) {
     const resultLine = RunmdResultLine.byLineNum.get(lineNum);
@@ -22,13 +22,13 @@ export class RunmdResultLine {
   constructor(line: string, lineNum: number) {
     this.lineNum = lineNum;
     this.line = line;
-    this.result = 'undefined';
+    this.results = [];
 
     RunmdResultLine.byLineNum.set(lineNum, this);
   }
 
   setResult(result: string) {
-    this.result = result;
+    this.results.push(result);
   }
 
   toScript() {
@@ -47,7 +47,8 @@ export class RunmdResultLine {
 
   /** Fully rendered line output */
   toString() {
-    return this.line.replace(RESULT_RE, this.result);
+    const rendered = this.results.length > 0 ? this.results : ['undefined'];
+    return this.line.replace(RESULT_RE, rendered.join('\n'));
   }
 }
 export function formatResult(val: unknown, line: string) {
