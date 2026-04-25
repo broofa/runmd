@@ -14,7 +14,6 @@ export function isRunmdBlock(part: unknown): part is RunmdBlock {
 export class RunmdBlock {
   lineNum: number;
   lang: string;
-  nextResultLineId = 0;
   lines: (string | RunmdResultLine | RunmdConsoleLine)[] = [];
   args: {
     run?: string;
@@ -64,6 +63,18 @@ export class RunmdBlock {
     }
   }
 
+  lineAtLineNum(lineNum: number) {
+    for (const line of this.lines) {
+      if (typeof line === 'string') {
+        continue;
+      }
+
+      if (line.lineNum === lineNum) {
+        return line;
+      }
+    }
+  }
+
   includeLine(line: string): boolean {
     if (BLOCK_END_REGEX.test(line)) {
       return false;
@@ -75,16 +86,14 @@ export class RunmdBlock {
         this.lineNum + this.lines.length
       );
       this.lines.push(resultLine);
-      this.nextResultLineId += 1;
+    } else if (CONSOLE_LOG_RE.test(line)) {
+      const consoleLine = new RunmdConsoleLine(
+        line,
+        this.lineNum + this.lines.length
+      );
+      this.lines.push(consoleLine);
     } else {
       this.lines.push(line);
-      if (CONSOLE_LOG_RE.test(line)) {
-        // Insert a slot to collect console output for this line
-        const consoleLine = new RunmdConsoleLine(
-          this.lineNum + this.lines.length - 1
-        );
-        this.lines.push(consoleLine);
-      }
     }
 
     return true;
@@ -106,40 +115,18 @@ export class RunmdBlock {
   }
 
   toString() {
-    const outputLines: string[] = [];
-    for (const line of this.lines) {
-      if (line instanceof RunmdConsoleLine) {
-        // Only include the slot if runtime output was captured
-        if (line.outputs.length > 0) {
-          outputLines.push(String(line));
-        }
-      } else {
-        outputLines.push(String(line));
-      }
-    }
-    return [`\`\`\`${this.lang}`, ...outputLines, '```'].join('\n');
+    return [`\`\`\`${this.lang}`, ...this.lines.map(String), '```'].join('\n');
   }
 
   toScript() {
     const result: string[] = [];
-    for (const [i, line] of this.lines.entries()) {
+    for (const line of this.lines) {
       if (line instanceof RunmdResultLine) {
         result.push(line.toScript());
       } else if (line instanceof RunmdConsoleLine) {
-        // skip — output slot only, no script
+        result.push(line.toScript());
       } else {
-        const next = this.lines[i + 1];
-        if (next instanceof RunmdConsoleLine) {
-          // Replace console.log( with __runmdConsoleLog(lineNum, sourceLine, ...
-          result.push(
-            line.replace(
-              /\bconsole\.log\(/g,
-              `__runmdConsoleLog(${next.lineNum}, ${JSON.stringify(line)}, `
-            )
-          );
-        } else {
-          result.push(line);
-        }
+        result.push(line);
       }
     }
     return result.join('\n');

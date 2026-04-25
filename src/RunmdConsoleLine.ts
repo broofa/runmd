@@ -1,27 +1,29 @@
 import util from 'node:util';
 
 export class RunmdConsoleLine {
-  static byLineNum = new Map<number, RunmdConsoleLine>();
-
+  line: string;
   lineNum: number;
-  outputs: string[] = [];
+  values: string[] = [];
 
-  static appendOutputForLine(lineNum: number, output: string) {
-    const consoleLine = RunmdConsoleLine.byLineNum.get(lineNum);
-    if (consoleLine) {
-      consoleLine.outputs.push(output);
-    } else {
-      console.warn(`No RunmdConsoleLine at line ${lineNum}`);
-    }
+  constructor(line: string, lineNum: number) {
+    this.lineNum = lineNum;
+    this.line = line;
+    this.values = [];
   }
 
-  constructor(lineNum: number) {
-    this.lineNum = lineNum;
-    RunmdConsoleLine.byLineNum.set(lineNum, this);
+  addValue(value: string) {
+    this.values.push(value);
+  }
+
+  toScript() {
+    return this.line.replace(
+      /\bconsole\.log\(/g,
+      `__runmdConsoleLog(${this.lineNum}, ${JSON.stringify(this.line)}, `
+    );
   }
 
   toString() {
-    return this.outputs.join('\n');
+    return [this.line, ...this.values].join('\n');
   }
 }
 
