@@ -1,7 +1,7 @@
 // Logic for running script blocks in a runmd document
 
 import { spawn } from 'node:child_process';
-import { unlink, writeFile } from 'node:fs/promises';
+import { readdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RunmdBlock } from './RunmdBlock.ts';
 import type RunmdDoc from './RunmdDoc.ts';
@@ -77,22 +77,27 @@ async function runBlocks(
 
   const sourcePath = path.resolve(process.cwd(), doc.sourcePath);
   const sourceDir = path.dirname(sourcePath);
-  const pathBase = path.join(
+  const namePrefix = `_runmd-${path.basename(sourcePath)}`;
+  const setupScriptPath = path.join(
     sourceDir,
-    `_runmd-${path.basename(sourcePath)}-${firstBlock.lineNum}`
+    `${namePrefix}-${firstBlock.lineNum}-setup.ts`
   );
 
-  let setupScriptPath: string | undefined;
+  // Cleanup old scripts from prior runs
+  await cleanup(sourceDir, namePrefix);
+
   if (setupBlock) {
-    setupScriptPath = `${pathBase}-setup.ts`;
     await writeFile(setupScriptPath, `${setupBlock.toScript()}\n`, 'utf8');
   }
-  const scriptPath = `${pathBase}.ts`;
+  const scriptPath = path.join(
+    sourceDir,
+    `${namePrefix}-${firstBlock.lineNum}.ts`
+  );
   await writeFile(scriptPath, `${script}\n`, 'utf8');
   try {
     return await new Promise<RunBlocksResult>((resolve, reject) => {
       const nodeArgs = ['--no-warnings', '--import', BOOTSTRAP_IMPORT_PATH];
-      if (setupScriptPath) {
+      if (setupBlock) {
         nodeArgs.push('--import', setupScriptPath);
       }
       nodeArgs.push(scriptPath);
@@ -143,10 +148,16 @@ async function runBlocks(
     });
   } finally {
     if (!setupBlock?.args.debug) {
-      await unlink(scriptPath).catch(() => undefined);
-      if (setupScriptPath) {
-        await unlink(setupScriptPath).catch(() => undefined);
-      }
+      await cleanup(sourceDir, namePrefix);
     }
   }
+}
+
+async function cleanup(sourceDir: string, namePrefix: string) {
+  const existing = await readdir(sourceDir).catch(() => [] as string[]);
+  await Promise.all(
+    existing
+      .filter((f) => f.startsWith(namePrefix) && f.endsWith('.ts'))
+      .map((f) => unlink(path.join(sourceDir, f)).catch(() => undefined))
+  );
 }
