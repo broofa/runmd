@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/broofa/runmd/compare/v1.4.1...v2.0.0) (2026-04-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Restart project.  Drop CJS support.  Add ESM and TS support. ([#48](https://github.com/broofa/runmd/issues/48))
+
 ## [1.4.1](https://github.com/broofa/runmd/compare/v1.4.0...v1.4.1) (2024-12-24)
 
 
