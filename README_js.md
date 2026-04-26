@@ -32,6 +32,7 @@ Arguments:
 
 Options:
   -o, --output <file>  output file
+  --check              verify output file is up to date, exit 1 if not
   --no-footer          omit the runmd footer
   -w, --watch          watch for changes
   -h, --help           display help for command

@@ -9,10 +9,14 @@
   "bin": {
     "runmd": "./src/cli.ts"
   },
-  "description": "Runnable README files",
+  "description": "Execute and update code blocks embedded in Markdown files",
   "keywords": [
     "markdown",
     "readme"
+  ],
+  "files": [
+    "src/**",
+    "!src/**/*.test.ts"
   ],
   "license": "MIT",
   "homepage": "https://github.com/broofa/runmd",
@@ -41,20 +45,18 @@
     "@biomejs/biome": "2.4.13",
     "@commitlint/config-conventional": "20.5.0",
     "@types/node": "25.6.0",
-    "commitlint": "20.5.0",
-    "husky": "9.1.7",
-    "npm-run-all": "4.1.5",
+    "commitlint": "20.5.2",
+    "lefthook": "2.1.6",
     "prettier": "3.8.3",
     "typescript": "6.0.3"
   },
   "scripts": {
-    "prepare": "husky",
+    "prepare": "lefthook install",
     "docs": "./src/cli.ts README_js.md --output README.md",
-    "docs:test": "npm run docs && git diff --quiet README.md",
-    "lint:fix": "biome check --write .",
-    "lint:test": "biome check .",
-    "release": "echo \"This project uses release-please for releases\"",
+    "docs:test": "npm run docs -- --check",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
     "test:unit": "node --test src/**/*.test.js src/**/*.test.ts",
-    "test": "npm run docs:test && npm run lint:test && npm run test:unit"
+    "test": "npm run docs:test && npm run lint && npm run test:unit"
   }
 }

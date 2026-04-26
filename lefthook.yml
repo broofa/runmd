@@ -1,0 +1,9 @@
+commit-msg:
+  commands:
+    commitlint:
+      run: commitlint --edit {1}
+
+pre-commit:
+  commands:
+    test:
+      run: npm test

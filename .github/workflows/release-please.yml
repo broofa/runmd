@@ -1,7 +1,3 @@
-# Relevant docs:
-# - https://github.com/googleapis/release-please
-# - https://github.com/googleapis/release-please-action
-
 on:
   workflow_dispatch:
 
@@ -20,7 +16,7 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -29,9 +25,9 @@ jobs:
       - run: echo "Release created?... ${{ steps.release.outputs.release_created }}"
 
       # Steps below handle publication to NPM
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: ${{ steps.release.outputs.release_created }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
