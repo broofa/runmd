@@ -1,11 +1,11 @@
-#!/usr/bin/env -S tsx --no-warnings
+#!/usr/bin/env node
 
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { Command } from 'commander';
 
-import RunmdDoc from './RunmdDoc.ts';
+import RunmdDoc from './RunmdDoc.js';
 
 const HEADER_TEMPLATE = `<!--
   -- This file is auto-generated from INPUT_NAME. Changes should be made there.

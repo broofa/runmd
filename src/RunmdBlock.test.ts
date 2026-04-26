@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { RunmdBlock } from './RunmdBlock.ts';
-import { RunmdConsoleLine } from './RunmdConsoleLine.ts';
+import { RunmdBlock } from './RunmdBlock.js';
+import { RunmdConsoleLine } from './RunmdConsoleLine.js';
 
 describe('RunmdBlock.fromStartLine', () => {
   const TESTS = [

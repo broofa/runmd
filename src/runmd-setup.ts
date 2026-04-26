@@ -1,10 +1,10 @@
 import { registerHooks } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { RunmdBlock } from './RunmdBlock.ts';
-import { formatConsoleArgs } from './RunmdConsoleLine.ts';
-import { formatResult } from './RunmdResultLine.ts';
-import type { RunmdMessage } from './runner.ts';
+import type { RunmdBlock } from './RunmdBlock.js';
+import { formatConsoleArgs } from './RunmdConsoleLine.js';
+import { formatResult } from './RunmdResultLine.js';
+import type { RunmdMessage } from './runner.js';
 
 type ImportMap = {
   imports: Record<string, string>;

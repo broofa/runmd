@@ -1,12 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isRunmdBlock, RunmdBlock } from './RunmdBlock.ts';
-import { runDoc } from './runner.ts';
+import { isRunmdBlock, RunmdBlock } from './RunmdBlock.js';
+import { runDoc } from './runner.js';
 
 export const BOOTSTRAP_IMPORT_PATH = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  'runmd-setup.ts'
+  'runmd-setup.js'
 );
 
 /**

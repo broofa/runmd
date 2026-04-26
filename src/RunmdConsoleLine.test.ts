@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { RunmdConsoleLine } from './RunmdConsoleLine.ts';
+import { RunmdConsoleLine } from './RunmdConsoleLine.js';
 
 describe('RunmdConsoleLine', () => {
   test('toString returns source line when no outputs', () => {

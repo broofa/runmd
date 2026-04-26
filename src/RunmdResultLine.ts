@@ -26,7 +26,7 @@ export class RunmdResultLine {
 
     // You can't wrap an expression in ()'s if it also has a var declaration, so
     // we do a bit of regex hacking to wrap just the expression part, here
-    const match = trimmed.match(/(^\s*(?:const|let|var)[\w\s,]*=\s)*(.*)/);
+    const match = trimmed.match(/(^\s*(?:const|let|var)\s+[^=]*=\s)*(.*)/);
 
     const [, declaration, expression] = match ?? [];
     return `${declaration ?? ''}__runmdSetResult(${String(expression)}, '${this.line.replaceAll(/'/g, "\\'")}', ${this.lineNum})`;

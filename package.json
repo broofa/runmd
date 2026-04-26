@@ -7,7 +7,7 @@
   "version": "2.1.0",
   "type": "module",
   "bin": {
-    "runmd": "./src/cli.ts"
+    "runmd": "./dist/cli.js"
   },
   "description": "Execute and update code blocks embedded in Markdown files",
   "keywords": [
@@ -15,9 +15,11 @@
     "readme"
   ],
   "files": [
-    "src/**",
-    "!src/**/*.test.ts"
+    "dist/**",
+    "!dist/**/*.test.*",
+    "!dist/samples/**"
   ],
+  "types": "./dist/RunmdDoc.d.ts",
   "license": "MIT",
   "homepage": "https://github.com/broofa/runmd",
   "commitlint": {
@@ -30,8 +32,7 @@
     "url": "https://github.com/broofa/runmd.git"
   },
   "dependencies": {
-    "commander": "14.0.3",
-    "tsx": "4.21.0"
+    "commander": "14.0.3"
   },
   "peerDependencies": {
     "prettier": "^3"
@@ -51,12 +52,13 @@
     "typescript": "6.0.3"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "prepare": "lefthook install",
-    "docs": "./src/cli.ts README_js.md --output README.md",
+    "docs": "npm run build && node ./dist/cli.js README_js.md --output README.md",
     "docs:test": "npm run docs -- --check",
     "lint": "biome check",
     "lint:fix": "biome check --write",
-    "test:unit": "node --test src/**/*.test.js src/**/*.test.ts",
+    "test:unit": "npm run build && node --test dist/**/*.test.js",
     "test": "npm run docs:test && npm run lint && npm run test:unit"
   }
 }
