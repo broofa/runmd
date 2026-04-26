@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.2](https://github.com/broofa/runmd/compare/v2.1.1...v2.1.2) (2026-04-26)
+
+
+### Bug Fixes
+
+* better file cleanup ([12c34ec](https://github.com/broofa/runmd/commit/12c34ec55dddbba2a64c71e056dc8b786edd81ca))
+
 ## [2.1.1](https://github.com/broofa/runmd/compare/v2.1.0...v2.1.1) (2026-04-26)
 
 
