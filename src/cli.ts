@@ -22,13 +22,14 @@ const program = new Command();
 program
   .argument('<input_file>', 'markdown file to process')
   .option('-o, --output <file>', 'output file')
+  .option('--check', 'verify output file is up to date, exit 1 if not')
   .option('--no-footer', 'omit the runmd footer')
   .option('-w, --watch', 'watch for changes')
   .parse();
 
 const inputName = program.args[0] || '(stding)';
 const options = program.opts();
-const { noFooter, watch, output: outputName } = options;
+const { check, noFooter, watch, output: outputName } = options;
 
 // Full paths (input and output)
 const inputPath = path.resolve(process.cwd(), inputName);
@@ -66,12 +67,22 @@ async function run(curr?: fs.Stats, prev?: fs.Stats) {
 
     // Write to output (file or stdout)
     if (outputPath) {
-      fs.writeFileSync(outputPath, markdown);
+      if (check) {
+        const existing = fs.existsSync(outputPath)
+          ? fs.readFileSync(outputPath, 'utf8')
+          : '';
+        if (markdown !== existing) {
+          console.error(`${outputName} is out of date`);
+          process.exit(1);
+        }
+      } else {
+        fs.writeFileSync(outputPath, markdown);
 
-      if (watch) {
-        console.log(
-          `Rendered ${outputName} at ${new Date().toLocaleTimeString()}`
-        );
+        if (watch) {
+          console.log(
+            `Rendered ${outputName} at ${new Date().toLocaleTimeString()}`
+          );
+        }
       }
     } else {
       process.stdout.write(markdown);
