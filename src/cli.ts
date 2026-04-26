@@ -114,10 +114,7 @@ async function formatWithPrettier(
     prettier =
       (prettierModule as { default?: typeof import('prettier') }).default ??
       (prettierModule as typeof import('prettier'));
-  } catch (err) {
-    console.log(
-      `Prettier not found (${(err as Error).message}), skipping formatting`
-    );
+  } catch {
     return markdown;
   }
 
