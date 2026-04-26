@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.1](https://github.com/broofa/runmd/compare/v2.1.0...v2.1.1) (2026-04-26)
+
+
+### Bug Fixes
+
+* use tsc build ([7f04aa2](https://github.com/broofa/runmd/commit/7f04aa2f8b42ce1051717e0ec88bd96957d681b7))
+* use tsc build ([#61](https://github.com/broofa/runmd/issues/61)) ([14a55f4](https://github.com/broofa/runmd/commit/14a55f407cea5ac8d59a9f1088033348269d7713))
+
 ## [2.1.0](https://github.com/broofa/runmd/compare/v2.0.0...v2.1.0) (2026-04-26)
 
 
