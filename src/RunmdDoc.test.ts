@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import RunmdDoc from './RunmdDoc.ts';
+import RunmdDoc from './RunmdDoc.js';
 
 const TESTS: {
   file: string;

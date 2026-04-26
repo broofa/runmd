@@ -3,9 +3,9 @@
 import { spawn } from 'node:child_process';
 import { readdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { RunmdBlock } from './RunmdBlock.ts';
-import type RunmdDoc from './RunmdDoc.ts';
-import { BOOTSTRAP_IMPORT_PATH } from './RunmdDoc.ts';
+import type { RunmdBlock } from './RunmdBlock.js';
+import type RunmdDoc from './RunmdDoc.js';
+import { BOOTSTRAP_IMPORT_PATH } from './RunmdDoc.js';
 
 export type RunBlocksResult = {
   scriptPath: string;
@@ -80,7 +80,7 @@ async function runBlocks(
   const namePrefix = `_runmd-${path.basename(sourcePath)}`;
   const setupScriptPath = path.join(
     sourceDir,
-    `${namePrefix}-${firstBlock.lineNum}-setup.ts`
+    `${namePrefix}-${firstBlock.lineNum}-setup.mjs`
   );
 
   // Cleanup old scripts from prior runs
@@ -157,7 +157,7 @@ async function cleanup(sourceDir: string, namePrefix: string) {
   const existing = await readdir(sourceDir).catch(() => [] as string[]);
   await Promise.all(
     existing
-      .filter((f) => f.startsWith(namePrefix) && f.endsWith('.ts'))
+      .filter((f) => f.startsWith(namePrefix))
       .map((f) => unlink(path.join(sourceDir, f)).catch(() => undefined))
   );
 }

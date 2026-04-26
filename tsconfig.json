@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
-    "noEmit": true,
+    "noEmit": false,
     "allowJs": true,
-    "allowImportingTsExtensions": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "inlineSources": true,
 
     // Environment Settings
     "module": "nodenext",
@@ -17,5 +22,6 @@
     "strict": true,
     "noUncheckedSideEffectImports": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src/**/*.ts"]
 }

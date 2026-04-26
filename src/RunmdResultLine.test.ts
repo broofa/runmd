@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { formatResult, RunmdResultLine } from './RunmdResultLine.ts';
+import { formatResult, RunmdResultLine } from './RunmdResultLine.js';
 
 describe('RunmdResultLine', () => {
   test('toScript wraps plain expressions in the result helper', () => {

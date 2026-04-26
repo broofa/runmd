@@ -10,7 +10,7 @@ const thisDir = path.dirname(fileURLToPath(import.meta.url));
 
 test('runmd.importMap remaps module specifiers', async () => {
   const tempDir = await mkdtemp(path.join(tmpdir(), 'runmd-import-map-'));
-  const setupPath = path.join(thisDir, 'runmd-setup.ts');
+  const setupPath = path.join(thisDir, 'runmd-setup.js');
   const targetModulePath = path.join(tempDir, 'mapped.mjs');
   const entryPath = path.join(tempDir, 'entry.mjs');
 

@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { RunmdConsoleLine } from './RunmdConsoleLine.ts';
-import { RESULT_RE, RunmdResultLine } from './RunmdResultLine.ts';
+import { RunmdConsoleLine } from './RunmdConsoleLine.js';
+import { RESULT_RE, RunmdResultLine } from './RunmdResultLine.js';
 
 const BLOCK_START_REGEX = /^```\s*((?:javascript|js|typescript|ts))\s+(--.*)?/i;
 const BLOCK_END_REGEX = /^```/;
