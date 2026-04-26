@@ -26,8 +26,8 @@
     "url": "https://github.com/broofa/runmd.git"
   },
   "dependencies": {
-    "@biomejs/biome": "2.4.13",
-    "commander": "14.0.3"
+    "commander": "14.0.3",
+    "tsx": "4.21.0"
   },
   "peerDependencies": {
     "prettier": "^3"
@@ -38,6 +38,7 @@
     }
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.13",
     "@commitlint/config-conventional": "20.5.0",
     "@types/node": "25.6.0",
     "commitlint": "20.5.0",

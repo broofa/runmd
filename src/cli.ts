@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --no-warnings
+#!/usr/bin/env -S tsx --no-warnings
 
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -22,7 +22,7 @@ const program = new Command();
 program
   .argument('<input_file>', 'markdown file to process')
   .option('-o, --output <file>', 'output file')
-  .option('--no-footer', "omit runmd's standard footer")
+  .option('--no-footer', 'omit the runmd footer')
   .option('-w, --watch', 'watch for changes')
   .parse();
 

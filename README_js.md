@@ -32,7 +32,7 @@ Arguments:
 
 Options:
   -o, --output <file>  output file
-  --no-footer          remove RunMD footer
+  --no-footer          omit the runmd footer
   -w, --watch          watch for changes
   -h, --help           display help for command
 ```
