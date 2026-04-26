@@ -154,9 +154,11 @@ async function runBlocks(
 }
 
 async function cleanup(sourceDir: string, namePrefix: string) {
-  const existing = await readdir(sourceDir).catch(() => [] as string[]);
+  let tempFiles = await readdir(sourceDir).catch(() => [] as string[]);
+  tempFiles = tempFiles.filter((f) => f.startsWith(namePrefix));
+  console.log('EXISTING', namePrefix, tempFiles);
   await Promise.all(
-    existing
+    tempFiles
       .filter((f) => f.startsWith(namePrefix))
       .map((f) => unlink(path.join(sourceDir, f)).catch(() => undefined))
   );
