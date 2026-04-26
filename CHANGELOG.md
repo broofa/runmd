@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/broofa/runmd/compare/v2.0.0...v2.1.0) (2026-04-26)
+
+
+### Features
+
+* --check flag for ci pipeline checks ([#59](https://github.com/broofa/runmd/issues/59)) ([8c3c051](https://github.com/broofa/runmd/commit/8c3c0517898d58b4f6c8761349930c6c6b12fb8f))
+* add --check flag for CI pipelines ([163c520](https://github.com/broofa/runmd/commit/163c520f9f3d5ad26dd98092a56467bbdcab1a7a))
+
+
+### Bug Fixes
+
+* tsx so cli runs from node_modules ([84a0026](https://github.com/broofa/runmd/commit/84a00261f48aa6b823e5a472c33442b03c84a053))
+* tsx so cli runs from node_modules ([#57](https://github.com/broofa/runmd/issues/57)) ([5852cb4](https://github.com/broofa/runmd/commit/5852cb4354aa5ec9488c078d09a0e617f0ec3313))
+
 ## [2.0.0](https://github.com/broofa/runmd/compare/v1.4.1...v2.0.0) (2026-04-24)
 
 
