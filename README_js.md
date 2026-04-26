@@ -6,7 +6,7 @@ runmd.importMap = {imports: {}};
 
 Run and annotate JS or TS code blocks in MarkDown files!
 
-[!Note] `runmd@2` is a complete rework of this project designed to work with ESM. CJS is no longer supported, node>=22 is now required, and Markdown files built for prior versions will not work.
+Note: Version 2 is a bit of a reset for this project as far as how things are implemented.  As of `runmd@2` CommonJS is no longer supported and and code is expected to use ESM.  Also, `node@22+` is required.
 
 ## Install
 
@@ -17,8 +17,8 @@ npm install runmd
 ## Quick Start
 
 1. Make a copy of your existing README. E.g. `cp README.md README_js.md`
-2. Edit `README_js.md` to `--run` flag to ` ```javascript` blocks you'd like processed
-3. Add `// RESULT` comments to show the runtime value of an expression.
+2. Edit `README_js.md` and add the `--run` flag to  any ` ```javascript` blocks you'd like processed
+3. Add `// RESULT` or `console.log()` to add runtime state
 4. Run it with `runmd README_js.md --output README.md`
 
 ## Usage
@@ -51,6 +51,14 @@ Add `--run` to any JS or TS code block (` ```js`, ` ```ts`, ` ```javascript`, ` 
 
     ```javascript --run
     `Hello, ${'Fred Smith'}!`; // ⇨ 'Fred Smith!'
+    ```
+
+### `--hide` option
+
+To remove a block from output, add the `--hide` option.  For example:
+
+    ```javascript --hide
+    `... this block is removed from output`;
     ```
 
 ### `// RESULT`
